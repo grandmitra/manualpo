@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pembuatan Purchase Order</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            margin: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .form-section h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .items-table th, .items-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .items-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .items-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #6c7b7d;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+            margin-left: 5px;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .print-container {
+            display: none;
+            margin-top: 40px;
+            border: 1px solid #333;
+            padding: 20px;
+            background-color: white;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .print-header {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .company-info {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .po-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .print-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .print-table th, .print-table td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .print-table th {
+            background-color: #eee;
+        }
+        
+        .totals {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .signatures {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .signature-box {
+            text-align: center;
+            width: 200px;
+            padding-top: 40px;
+            border-top: 1px solid #333;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-container, .print-container * {
+                visibility: visible;
+            }
+            
+            .print-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+        
+        .input-small {
+            width: 80px;
+        }
+        
+        .input-medium {
+            width: 120px;
+        }
+        
+        .item-row-controls {
+            display: flex;
+            align-items: center;
+        }
+        
+        .currency::before {
+            content: "Rp ";
+        }
+    </style>
+</head>
+<body>
+    <div class="container no-print">
+        <h1>Aplikasi Pembuatan Purchase Order</h1>
+        
+        <div class="form-section">
+            <h3>Informasi Perusahaan & PO</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="companyName">Nama Perusahaan</label>
+                    <input type="text" id="companyName" value="PT. GRAND MITRA BANGUNAN">
+                </div>
+                <div class="form-group">
+                    <label for="companyAddress">Alamat Perusahaan</label>
+                    <textarea id="companyAddress">THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272</textarea>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="poNumber">Nomor PO</label>
+                    <input type="text" id="poNumber" value="GM11.251027.010">
+                </div>
+                <div class="form-group">
+                    <label for="poDate">Tanggal PO</label>
+                    <input type="date" id="poDate" value="2025-10-27">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Informasi Supplier</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="supplierName">Nama Supplier</label>
+                    <input type="text" id="supplierName" value="KARYA WIGUNA INDAH, PT. (S0154)">
+                </div>
+                <div class="form-group">
+                    <label for="supplierAddress">Alamat Supplier</label>
+                    <input type="text" id="supplierAddress" value="JAKARTA UTARA">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Daftar Barang</h3>
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th width="5%">NO</th>
+                        <th width="35%">NAMA BARANG</th>
+                        <th width="10%">QTY</th>
+                        <th width="15%">HARGA SAT</th>
+                        <th width="10%">DISC %</th>
+                        <th width="15%">DISC TOTAL</th>
+                        <th width="10%">JUMLAH</th>
+                        <th width="5%">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody">
+                    <!-- Item rows will be added here -->
+                </tbody>
+            </table>
+            
+            <button type="button" class="btn btn-primary" id="addItemBtn">Tambah Barang</button>
+        </div>
+        
+        <div class="form-section">
+            <h3>Keterangan & Informasi Tambahan</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="notes">Keterangan</label>
+                    <textarea id="notes">PO URGENT</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="entryBy">Entry Oleh</label>
+                    <input type="text" id="entryBy" value="ADAM">
+                </div>
+                <div class="form-group">
+                    <label for="approvedBy">Menyetujui</label>
+                    <input type="text" id="approvedBy" value="SOFYAN">
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button type="button" class="btn btn-primary" id="previewBtn">Preview PO</button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">Reset Form</button>
+            <button type="button" class="btn btn-primary" id="printBtn">Cetak PO</button>
+        </div>
+    </div>
+    
+    <!-- Print Output Section -->
+    <div class="print-container" id="printContainer">
+        <div class="print-header">
+            <div class="company-info" id="printCompanyInfo">
+                <!-- Company info will be inserted here -->
+            </div>
+        </div>
+        
+        <div class="po-info">
+            <div>
+                <strong>Numer :</strong> <span id="printPoNumber"></span><br>
+                <strong>Tanggal :</strong> <span id="printPoDate"></span>
+            </div>
+            <div>
+                <strong>Supplier :</strong> <span id="printSupplierName"></span><br>
+                <strong>Alamat :</strong> <span id="printSupplierAddress"></span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; font-weight: bold; margin: 20px 0; font-size: 18px;">
+            PURCHASE ORDER
+        </div>
+        
+        <table class="print-table" id="printItemsTable">
+            <thead>
+                <tr>
+                    <th width="5%">NO</th>
+                    <th width="45%">NAMA BARANG</th>
+                    <th width="10%">QTY</th>
+                    <th width="15%">HARGA SAT</th>
+                    <th width="10%">DISC %</th>
+                    <th width="15%">DISC TOTAL</th>
+                    <th width="10%">JUMLAH</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Items will be inserted here -->
+            </tbody>
+        </table>
+        
+        <div id="printNotes" style="margin-top: 10px; font-size: 14px;">
+            <!-- Notes will be inserted here -->
+        </div>
+        
+        <div class="totals">
+            <div style="text-align: left; margin-bottom: 10px;">
+                Entry, Mengetahui, Menyetujui
+            </div>
+            <div>SUB TOTAL : <span id="printSubtotal" class="currency"></span></div>
+            <div>DISC : <span id="printTotalDiscount" class="currency"></span></div>
+            <div>JUMLAH : <span id="printTotalAmount" class="currency"></span></div>
+            <div>PPN : <span id="printTax" class="currency"></span></div>
+        </div>
+        
+        <div class="signatures">
+            <div class="signature-box" id="printEntryBy">
+                <!-- Entry signature -->
+            </div>
+            <div class="signature-box" id="printApprovedBy">
+                <!-- Approved signature -->
+            </div>
+            <div class="signature-box">
+                <div id="printTimestamp"></div>
+            </div>
+        </div>
+        
+        <div style="text-align: right; margin-top: 20px; font-weight: bold; font-size: 16px;">
+            TOTAL : <span id="printGrandTotal" class="currency"></span>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for the item
+        const sampleItem = {
+            code: "1023353",
+            name: "FULTON MONTE SERA GREY 60X60 @1,44 M2 MATT (SHADE 48)",
+            qty: "3",
+            unit: "DUS",
+            price: "129600.00",
+            discountPercent: "",
+            discountAmount: "0.00"
+        };
+        
+        let itemCount = 0;
+        
+        // Initialize with one item
+        document.addEventListener('DOMContentLoaded', function() {
+            addItemRow(sampleItem);
+            updatePrintPreview();
+        });
+        
+        // Function to add a new item row
+        function addItemRow(item = null) {
+            itemCount++;
+            const tbody = document.getElementById('itemsBody');
+            const row = document.createElement('tr');
+            row.id = `itemRow${itemCount}`;
+            
+            row.innerHTML = `
+                <td>${itemCount}</td>
+                <td>
+                    <input type="text" class="item-code" placeholder="Kode barang" value="${item ? item.code : ''}" style="width: 80px; margin-bottom: 5px;">
+                    <br>
+                    <input type="text" class="item-name" placeholder="Nama barang" value="${item ? item.name : ''}" style="width: 100%;">
+                </td>
+                <td>
+                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : ''}" style="width: 50px;">
+                    <input type="text" class="item-unit" placeholder="Unit" value="${item ? item.unit : 'DUS'}" style="width: 50px; margin-top: 5px;">
+                </td>
+                <td><input type="text" class="item-price currency-input" placeholder="Harga" value="${item ? item.price : ''}"></td>
+                <td><input type="text" class="item-discount-percent" placeholder="%" value="${item ? item.discountPercent : ''}" style="width: 50px;"></td>
+                <td><input type="text" class="item-discount-amount currency-input" placeholder="Diskon" value="${item ? item.discountAmount : '0.00'}" readonly></td>
+                <td><span class="item-total currency">0</span></td>
+                <td class="item-row-controls">
+                    <button type="button" class="btn btn-danger" onclick="removeItemRow(${itemCount})">X</button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            
+            // Add event listeners to the new row inputs
+            const inputs = row.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculateRowTotal);
+                input.addEventListener('input', updatePrintPreview);
+            });
+            
+            calculateRowTotal({target: row.querySelector('.item-price')});
+        }
+        
+        // Function to remove an item row
+        function removeItemRow(rowId) {
+            const row = document.getElementById(`itemRow${rowId}`);
+            if (row) {
+                row.remove();
+                renumberItems();
+                updatePrintPreview();
+            }
+        }
+        
+        // Function to renumber items after deletion
+        function renumberItems() {
+            const rows = document.querySelectorAll('#itemsBody tr');
+            itemCount = 0;
+            
+            rows.forEach((row, index) => {
+                itemCount++;
+                row.cells[0].textContent = itemCount;
+                row.id = `itemRow${itemCount}`;
+                
+                // Update remove button onclick
+                const removeBtn = row.querySelector('.btn-danger');
+                if (removeBtn) {
+                    removeBtn.setAttribute('onclick', `removeItemRow(${itemCount})`);
+                }
+            });
+        }
+        
+        // Function to calculate row total
+        function calculateRowTotal(e) {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            
+            const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+            const price = parseFloat(row.querySelector('.item-price').value.replace(/[^0-9.-]+/g, "")) || 0;
+            const discountPercent = parseFloat(row.querySelector('.item-discount-percent').value) || 0;
+            
+            let discountAmount = 0;
+            
+            if (discountPercent > 0) {
+                discountAmount = (qty * price * discountPercent) / 100;
+            } else {
+                const discountInput = row.querySelector('.item-discount-amount').value;
+                discountAmount = parseFloat(discountInput.replace(/[^0-9.-]+/g, "")) || 0;
+            }
+            
+            const total = (qty * price) - discountAmount;
+            
+            // Update discount amount field
+            row.querySelector('.item-discount-amount').value = formatCurrency(discountAmount);
+            
+            // Update total display
+            row.querySelector('.item-total').textContent = formatCurrency(total);
+            
+            // Update print preview
+            updatePrintPreview();
+        }
+        
+        // Function to format currency
+        function formatCurrency(value) {
+            return value.toLocaleString('id-ID', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Function to update print preview
+        function updatePrintPreview() {
+            // Company info
+            document.getElementById('printCompanyInfo').innerHTML = `
+                <strong>${document.getElementById('companyName').value}</strong><br>
+                ${document.getElementById('companyAddress').value.replace(/\n/g, '<br>')}
+            `;
+            
+            // PO info
+            document.getElementById('printPoNumber').textContent = document.getElementById('poNumber').value;
+            document.getElementById('printPoDate').textContent = formatDate(document.getElementById('poDate').value);
+            document.getElementById('printSupplierName').textContent = document.getElementById('supplierName').value;
+            document.getElementById('printSupplierAddress').textContent = document.getElementById('supplierAddress').value;
+            
+            // Items table
+            const printTableBody = document.querySelector('#printItemsTable tbody');
+            printTableBody.innerHTML = '';
+            
+            const itemRows = document.querySelectorAll('#itemsBody tr');
+            let subtotal = 0;
+            let totalDiscount = 0;
+            
+            itemRows.forEach((row, index) => {
+                const code = row.querySelector('.item-code').value || '';
+                const name = row.querySelector('.item-name').value || '';
+                const qty = row.querySelector('.item-qty').value || '0';
+                const unit = row.querySelector('.item-unit').value || '';
+                const price = parseFloat(row.querySelector('.item-price').value.replace(/[^0-9.-]+/g, "")) || 0;
+                const discountPercent = row.querySelector('.item-discount-percent').value || '';
+                const discountAmount = parseFloat(row.querySelector('.item-discount-amount').value.replace(/[^0-9.-]+/g, "")) || 0;
+                const total = parseFloat(row.querySelector('.item-total').textContent.replace(/[^0-9.-]+/g, "")) || 0;
+                
+                subtotal += qty * price;
+                totalDiscount += discountAmount;
+                
+                const printRow = document.createElement('tr');
+                printRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${code} ${name}</td>
+                    <td>${qty} ${unit}</td>
+                    <td class="currency">${formatCurrency(price)}</td>
+                    <td>${discountPercent}</td>
+                    <td class="currency">${formatCurrency(discountAmount)}</td>
+                    <td class="currency">${formatCurrency(total)}</td>
+                `;
+                
+                printTableBody.appendChild(printRow);
+            });
+            
+            // Calculate totals
+            const totalAmount = subtotal - totalDiscount;
+            const tax = totalAmount * 0.11; // Assuming 11% PPN
+            const grandTotal = totalAmount + tax;
+            
+            // Update totals in preview
+            document.getElementById('printSubtotal').textContent = formatCurrency(subtotal);
+            document.getElementById('printTotalDiscount').textContent = formatCurrency(totalDiscount);
+            document.getElementById('printTotalAmount').textContent = formatCurrency(totalAmount);
+            document.getElementById('printTax').textContent = formatCurrency(tax);
+            document.getElementById('printGrandTotal').textContent = formatCurrency(grandTotal);
+            
+            // Notes
+            document.getElementById('printNotes').textContent = `Keterangan : ${document.getElementById('notes').value}`;
+            
+            // Signatures
+            document.getElementById('printEntryBy').innerHTML = `
+                ( ${document.getElementById('entryBy').value} )
+            `;
+            document.getElementById('printApprovedBy').innerHTML = `
+                ( ${document.getElementById('approvedBy').value} )
+            `;
+            
+            // Timestamp
+            const now = new Date();
+            document.getElementById('printTimestamp').textContent = 
+                `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+        }
+        
+        // Function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        }
+        
+        // Function to show print preview
+        function showPrintPreview() {
+            updatePrintPreview();
+            document.getElementById('printContainer').style.display = 'block';
+            document.getElementById('previewBtn').textContent = 'Sembunyikan Preview';
+            
+            // Scroll to preview
+            document.getElementById('printContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Function to hide print preview
+        function hidePrintPreview() {
+            document.getElementById('printContainer').style.display = 'none';
+            document.getElementById('previewBtn').textContent = 'Preview PO';
+        }
+        
+        // Function to reset form
+        function resetForm() {
+            if (confirm('Apakah Anda yakin ingin mereset form? Semua data akan dihapus.')) {
+                document.getElementById('itemsBody').innerHTML = '';
+                itemCount = 0;
+                
+                // Reset form fields
+                document.getElementById('companyName').value = 'PT. GRAND MITRA BANGUNAM';
+                document.getElementById('companyAddress').value = 'THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272';
+                document.getElementById('poNumber').value = 'GM11.251027.010';
+                document.getElementById('poDate').value = '2025-10-27';
+                document.getElementById('supplierName').value = 'KARYA WIGUNA INDAH, PT. (S0154)';
+                document.getElementById('supplierAddress').value = 'JAKARTA UTARA';
+                document.getElementById('notes').value = 'PO URGENT';
+                document.getElementById('entryBy').value = 'ADAM';
+                document.getElementById('approvedBy').value = 'SOFYAN';
+                
+                // Add one empty item row
+                addItemRow();
+                
+                // Hide preview
+                hidePrintPreview();
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('addItemBtn').addEventListener('click', function() {
+            addItemRow();
+        });
+        
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            if (document.getElementById('printContainer').style.display === 'block') {
+                hidePrintPreview();
+            } else {
+                showPrintPreview();
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', resetForm);
+        
+        document.getElementById('printBtn').addEventListener('click', function() {
+            updatePrintPreview();
+            window.print();
+        });
+        
+        // Add event listeners to all form inputs for live preview update
+        const formInputs = document.querySelectorAll('.form-section input, .form-section textarea, .form-section select');
+        formInputs.forEach(input => {
+            input.addEventListener('input', updatePrintPreview);
+        });
+        
+        // Format currency inputs on blur
+        document.addEventListener('blur', function(e) {
+            if (e.target.classList.contains('currency-input')) {
+                const value = parseFloat(e.target.value.replace(/[^0-9.-]+/g, "")) || 0;
+                e.target.value = formatCurrency(value);
+                calculateRowTotal(e);
+            }
+        }, true);
+    </script>
+</body>
+</html>
