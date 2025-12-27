@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Pembuatan Purchase Order</title>
+    <title>Aplikasi Pembuatan Purchase Order v2</title>
     <style>
         * {
             box-sizing: border-box;
@@ -152,6 +152,7 @@
             padding: 20px;
             background-color: white;
             font-family: 'Times New Roman', serif;
+            page-break-inside: avoid;
         }
         
         .print-header {
@@ -176,11 +177,12 @@
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            font-size: 12px;
         }
         
         .print-table th, .print-table td {
             border: 1px solid #333;
-            padding: 8px;
+            padding: 6px;
             text-align: left;
         }
         
@@ -222,12 +224,18 @@
                 top: 0;
                 width: 100%;
                 border: none;
-                padding: 0;
+                padding: 20px;
                 margin: 0;
+                background-color: white;
+                box-shadow: none;
             }
             
             .no-print {
-                display: none;
+                display: none !important;
+            }
+            
+            .print-container {
+                display: block !important;
             }
         }
         
@@ -246,6 +254,14 @@
         
         .currency::before {
             content: "Rp ";
+        }
+        
+        .currency-input {
+            text-align: right;
+        }
+        
+        .print-visible {
+            display: block !important;
         }
     </style>
 </head>
@@ -409,6 +425,10 @@
         <div style="text-align: right; margin-top: 20px; font-weight: bold; font-size: 16px;">
             TOTAL : <span id="printGrandTotal" class="currency"></span>
         </div>
+        
+        <div style="text-align: center; margin-top: 20px; font-size: 12px;">
+            Halaman 1 dari 1
+        </div>
     </div>
 
     <script>
@@ -431,12 +451,37 @@
             updatePrintPreview();
         });
         
+        // Function to parse currency string to number
+        function parseCurrency(value) {
+            if (!value || value === '') return 0;
+            // Remove "Rp ", dots (thousands separators), and replace comma with dot
+            let cleanValue = value.toString()
+                .replace(/Rp\s*/g, '')
+                .replace(/\./g, '')
+                .replace(/,/g, '.');
+            return parseFloat(cleanValue) || 0;
+        }
+        
+        // Function to format number to currency string
+        function formatCurrency(value) {
+            // Format with dots as thousands separator and comma as decimal separator
+            let parts = value.toFixed(2).split('.');
+            let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return integerPart + ',' + parts[1];
+        }
+        
         // Function to add a new item row
         function addItemRow(item = null) {
             itemCount++;
             const tbody = document.getElementById('itemsBody');
             const row = document.createElement('tr');
             row.id = `itemRow${itemCount}`;
+            
+            // Format price for display
+            let displayPrice = '';
+            if (item && item.price) {
+                displayPrice = formatCurrency(parseFloat(item.price));
+            }
             
             row.innerHTML = `
                 <td>${itemCount}</td>
@@ -446,13 +491,19 @@
                     <input type="text" class="item-name" placeholder="Nama barang" value="${item ? item.name : ''}" style="width: 100%;">
                 </td>
                 <td>
-                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : ''}" style="width: 50px;">
+                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : '1'}" style="width: 50px;">
                     <input type="text" class="item-unit" placeholder="Unit" value="${item ? item.unit : 'DUS'}" style="width: 50px; margin-top: 5px;">
                 </td>
-                <td><input type="text" class="item-price currency-input" placeholder="Harga" value="${item ? item.price : ''}"></td>
-                <td><input type="text" class="item-discount-percent" placeholder="%" value="${item ? item.discountPercent : ''}" style="width: 50px;"></td>
-                <td><input type="text" class="item-discount-amount currency-input" placeholder="Diskon" value="${item ? item.discountAmount : '0.00'}" readonly></td>
-                <td><span class="item-total currency">0</span></td>
+                <td>
+                    <input type="text" class="item-price currency-input" placeholder="Harga" value="${displayPrice}" onblur="formatCurrencyInput(this)">
+                </td>
+                <td>
+                    <input type="text" class="item-discount-percent" placeholder="%" value="${item ? item.discountPercent : ''}" style="width: 50px;">
+                </td>
+                <td>
+                    <input type="text" class="item-discount-amount currency-input" placeholder="Diskon" value="${item && item.discountAmount ? formatCurrency(parseFloat(item.discountAmount)) : '0,00'}" readonly>
+                </td>
+                <td><span class="item-total currency">${item && item.price ? formatCurrency(parseFloat(item.price) * (parseFloat(item.qty) || 1)) : '0,00'}</span></td>
                 <td class="item-row-controls">
                     <button type="button" class="btn btn-danger" onclick="removeItemRow(${itemCount})">X</button>
                 </td>
@@ -468,6 +519,13 @@
             });
             
             calculateRowTotal({target: row.querySelector('.item-price')});
+        }
+        
+        // Function to format currency input on blur
+        function formatCurrencyInput(input) {
+            let value = parseCurrency(input.value);
+            input.value = formatCurrency(value);
+            calculateRowTotal({target: input});
         }
         
         // Function to remove an item row
@@ -504,7 +562,7 @@
             if (!row) return;
             
             const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-            const price = parseFloat(row.querySelector('.item-price').value.replace(/[^0-9.-]+/g, "")) || 0;
+            const price = parseCurrency(row.querySelector('.item-price').value);
             const discountPercent = parseFloat(row.querySelector('.item-discount-percent').value) || 0;
             
             let discountAmount = 0;
@@ -512,8 +570,9 @@
             if (discountPercent > 0) {
                 discountAmount = (qty * price * discountPercent) / 100;
             } else {
+                // If discount percent is not set, use the discount amount field
                 const discountInput = row.querySelector('.item-discount-amount').value;
-                discountAmount = parseFloat(discountInput.replace(/[^0-9.-]+/g, "")) || 0;
+                discountAmount = parseCurrency(discountInput);
             }
             
             const total = (qty * price) - discountAmount;
@@ -528,20 +587,16 @@
             updatePrintPreview();
         }
         
-        // Function to format currency
-        function formatCurrency(value) {
-            return value.toLocaleString('id-ID', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        }
-        
         // Function to update print preview
         function updatePrintPreview() {
+            console.log("Updating print preview...");
+            
             // Company info
+            const companyName = document.getElementById('companyName').value;
+            const companyAddress = document.getElementById('companyAddress').value;
             document.getElementById('printCompanyInfo').innerHTML = `
-                <strong>${document.getElementById('companyName').value}</strong><br>
-                ${document.getElementById('companyAddress').value.replace(/\n/g, '<br>')}
+                <strong>${companyName}</strong><br>
+                ${companyAddress.replace(/\n/g, '<br>')}
             `;
             
             // PO info
@@ -563,10 +618,10 @@
                 const name = row.querySelector('.item-name').value || '';
                 const qty = row.querySelector('.item-qty').value || '0';
                 const unit = row.querySelector('.item-unit').value || '';
-                const price = parseFloat(row.querySelector('.item-price').value.replace(/[^0-9.-]+/g, "")) || 0;
+                const price = parseCurrency(row.querySelector('.item-price').value);
                 const discountPercent = row.querySelector('.item-discount-percent').value || '';
-                const discountAmount = parseFloat(row.querySelector('.item-discount-amount').value.replace(/[^0-9.-]+/g, "")) || 0;
-                const total = parseFloat(row.querySelector('.item-total').textContent.replace(/[^0-9.-]+/g, "")) || 0;
+                const discountAmount = parseCurrency(row.querySelector('.item-discount-amount').value);
+                const total = parseCurrency(row.querySelector('.item-total').textContent);
                 
                 subtotal += qty * price;
                 totalDiscount += discountAmount;
@@ -576,10 +631,10 @@
                     <td>${index + 1}</td>
                     <td>${code} ${name}</td>
                     <td>${qty} ${unit}</td>
-                    <td class="currency">${formatCurrency(price)}</td>
+                    <td>${formatCurrency(price)}</td>
                     <td>${discountPercent}</td>
-                    <td class="currency">${formatCurrency(discountAmount)}</td>
-                    <td class="currency">${formatCurrency(total)}</td>
+                    <td>${formatCurrency(discountAmount)}</td>
+                    <td>${formatCurrency(total)}</td>
                 `;
                 
                 printTableBody.appendChild(printRow);
@@ -612,10 +667,13 @@
             const now = new Date();
             document.getElementById('printTimestamp').textContent = 
                 `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            console.log("Print preview updated successfully");
         }
         
         // Function to format date
         function formatDate(dateString) {
+            if (!dateString) return '';
             const date = new Date(dateString);
             return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
         }
@@ -636,6 +694,29 @@
             document.getElementById('previewBtn').textContent = 'Preview PO';
         }
         
+        // Function to print PO
+        function printPO() {
+            console.log("Printing PO...");
+            
+            // Ensure print preview is updated
+            updatePrintPreview();
+            
+            // Show print container
+            document.getElementById('printContainer').style.display = 'block';
+            
+            // Wait a moment for DOM to update
+            setTimeout(() => {
+                // Trigger print
+                window.print();
+                
+                // Hide print container after printing
+                setTimeout(() => {
+                    document.getElementById('printContainer').style.display = 'none';
+                    document.getElementById('previewBtn').textContent = 'Preview PO';
+                }, 500);
+            }, 100);
+        }
+        
         // Function to reset form
         function resetForm() {
             if (confirm('Apakah Anda yakin ingin mereset form? Semua data akan dihapus.')) {
@@ -653,8 +734,11 @@
                 document.getElementById('entryBy').value = 'ADAM';
                 document.getElementById('approvedBy').value = 'SOFYAN';
                 
-                // Add one empty item row
-                addItemRow();
+                // Add one sample item row
+                addItemRow(sampleItem);
+                
+                // Update preview
+                updatePrintPreview();
                 
                 // Hide preview
                 hidePrintPreview();
@@ -676,10 +760,7 @@
         
         document.getElementById('resetBtn').addEventListener('click', resetForm);
         
-        document.getElementById('printBtn').addEventListener('click', function() {
-            updatePrintPreview();
-            window.print();
-        });
+        document.getElementById('printBtn').addEventListener('click', printPO);
         
         // Add event listeners to all form inputs for live preview update
         const formInputs = document.querySelectorAll('.form-section input, .form-section textarea, .form-section select');
@@ -687,14 +768,8 @@
             input.addEventListener('input', updatePrintPreview);
         });
         
-        // Format currency inputs on blur
-        document.addEventListener('blur', function(e) {
-            if (e.target.classList.contains('currency-input')) {
-                const value = parseFloat(e.target.value.replace(/[^0-9.-]+/g, "")) || 0;
-                e.target.value = formatCurrency(value);
-                calculateRowTotal(e);
-            }
-        }, true);
+        // Initialize the form
+        updatePrintPreview();
     </script>
 </body>
 </html>
