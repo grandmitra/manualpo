@@ -500,7 +500,6 @@
             width: 100%;
         }
         
-        /* Tabel Items - DIPERBARUI untuk menambahkan kode barang */
         .items-table {
             width: 100%;
             border-collapse: collapse;
@@ -528,7 +527,6 @@
             background-color: #f8f9ff;
         }
         
-        /* Input dalam tabel */
         .items-table input {
             width: 100%;
             padding: 8px 10px;
@@ -543,7 +541,6 @@
             box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
         }
         
-        /* Styling untuk kolom jumlah */
         .total-cell {
             font-weight: bold;
             font-family: 'Courier New', monospace;
@@ -741,6 +738,7 @@
             border-color: var(--primary);
         }
         
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -811,12 +809,63 @@
             transform: rotate(90deg);
         }
         
-        /* Print Container */
+        /* Print Container - DIUBAH untuk print normal */
         .print-container {
-            padding: 30px;
+            padding: 20px;
             font-family: Arial, sans-serif;
             font-size: 12px;
             color: #000;
+            background: white !important;
+        }
+        
+        /* Style khusus untuk print */
+        @media print {
+            body * {
+                visibility: hidden;
+                background: white !important;
+                color: black !important;
+            }
+            
+            #printSection, #printSection * {
+                visibility: visible;
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+            
+            #printSection {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 20px;
+                margin: 0;
+                background: white !important;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            /* Hapus semua background warna untuk hemat tinta */
+            table, th, td {
+                border: 1px solid #000 !important;
+                background: white !important;
+                color: black !important;
+            }
+            
+            th {
+                background-color: #f0f0f0 !important;
+                font-weight: bold;
+            }
+            
+            /* Hilangkan semua gradient dan warna */
+            .modal-header, .btn, .card, .sidebar, .header, .form-section {
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+            }
         }
         
         /* Tabel untuk cetakan */
@@ -825,20 +874,23 @@
             border-collapse: collapse;
             margin: 10px 0;
             font-size: 11px;
+            background: white !important;
         }
         
         .print-table th {
-            background-color: #f2f2f2;
+            background-color: #f0f0f0 !important;
             border: 1px solid #000;
             padding: 6px;
             text-align: center;
             font-weight: bold;
+            color: black !important;
         }
         
         .print-table td {
             border: 1px solid #000;
             padding: 6px;
             text-align: left;
+            color: black !important;
         }
         
         .print-table .text-right {
@@ -856,16 +908,18 @@
             margin-left: auto;
             margin-top: 10px;
             font-size: 11px;
+            background: white !important;
         }
         
         .total-table td {
             padding: 4px 8px;
             border: 1px solid #000;
+            color: black !important;
         }
         
         .total-table .total-label {
             font-weight: bold;
-            background-color: #f2f2f2;
+            background-color: #f0f0f0 !important;
         }
         
         .total-table .total-value {
@@ -918,13 +972,11 @@
             background: var(--warning);
         }
         
-        /* Currency style untuk tampilan */
         .currency-cell {
             text-align: right;
             font-family: 'Courier New', monospace;
         }
         
-        /* Form untuk input satuan */
         .qty-unit {
             display: flex;
             gap: 5px;
@@ -939,6 +991,17 @@
             padding: 8px 5px;
             border: 1px solid #ddd;
             border-radius: 5px;
+        }
+        
+        /* Hidden print section */
+        #printSection {
+            display: none;
+        }
+        
+        @media print {
+            #printSection {
+                display: block;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -1054,7 +1117,7 @@
                     </div>
                 </div>
                 
-                <!-- Buat PO Page - DIPERBARUI dengan kolom tambahan -->
+                <!-- Buat PO Page -->
                 <div class="page" id="buat-po">
                     <div class="header">
                         <h2><i class="fas fa-plus-circle"></i> Buat Purchase Order Baru</h2>
@@ -1065,7 +1128,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="companyName">Nama Perusahaan</label>
-                                <input type="text" id="companyName" value="PT. GRAND MITRA BANGUNAM">
+                                <input type="text" id="companyName" value="PT. GRAND MITRA BANGUNAN">
                             </div>
                             <div class="form-group">
                                 <label for="companyAddress">Alamat Perusahaan</label>
@@ -1104,15 +1167,15 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="supplierName">Nama Supplier</label>
-                                <input type="text" id="supplierName" value="KARYA WIGUNA INDAH, PT. (S0154)">
+                                <input type="text" id="supplierName" placeholder="Contoh: ANGELS WINGS">
                             </div>
                             <div class="form-group">
                                 <label for="supplierAddress">Alamat Supplier</label>
-                                <input type="text" id="supplierAddress" value="JAKARTA UTARA">
+                                <input type="text" id="supplierAddress" placeholder="Contoh: PIK2">
                             </div>
                             <div class="form-group">
                                 <label for="supplierPhone">Telepon Supplier</label>
-                                <input type="text" id="supplierPhone" value="021-12345678">
+                                <input type="text" id="supplierPhone" placeholder="Contoh: 021-12345678">
                             </div>
                         </div>
                     </div>
@@ -1124,7 +1187,6 @@
                                 <thead>
                                     <tr>
                                         <th width="3%">NO</th>
-                                        <th width="10%">KODE</th>
                                         <th width="25%">NAMA BARANG</th>
                                         <th width="10%">QTY</th>
                                         <th width="8%">SATUAN</th>
@@ -1150,7 +1212,6 @@
                         </div>
                     </div>
                     
-                    <!-- Bagian Total & PPN - DITAMBAHKAN -->
                     <div class="form-section">
                         <h3><i class="fas fa-calculator"></i> Total & Pajak</h3>
                         <div class="form-row">
@@ -1355,12 +1416,15 @@
                 <button class="btn btn-warning" onclick="closePrintModal()">
                     <i class="fas fa-times"></i> Tutup
                 </button>
-                <button class="btn btn-primary" onclick="printDocument()">
+                <button class="btn btn-primary" onclick="printPO()">
                     <i class="fas fa-print"></i> Cetak
                 </button>
             </div>
         </div>
     </div>
+    
+    <!-- Hidden div untuk print -->
+    <div id="printSection" style="display: none;"></div>
     
     <!-- Notification -->
     <div class="notification" id="notification"></div>
@@ -1522,6 +1586,17 @@
             const savedData = localStorage.getItem('poData');
             if (savedData) {
                 poData = JSON.parse(savedData);
+                // Cari nomor PO terakhir untuk counter
+                if (poData.length > 0) {
+                    const lastPO = poData[poData.length - 1];
+                    if (lastPO.poNumber) {
+                        const parts = lastPO.poNumber.split('.');
+                        if (parts.length === 3) {
+                            const lastNum = parseInt(parts[2]) || 0;
+                            poCounter = lastNum + 1;
+                        }
+                    }
+                }
             }
             
             const today = new Date().toISOString().split('T')[0];
@@ -1584,7 +1659,7 @@
         }
         
         // ==============================
-        // PO FORM FUNCTIONS - DIPERBARUI
+        // PO FORM FUNCTIONS
         // ==============================
         
         function generatePONumber() {
@@ -1592,15 +1667,6 @@
             const year = now.getFullYear().toString().slice(-2);
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
             const day = now.getDate().toString().padStart(2, '0');
-            
-            const lastPO = poData[poData.length - 1];
-            if (lastPO && lastPO.poNumber) {
-                const parts = lastPO.poNumber.split('.');
-                if (parts.length === 3) {
-                    const lastNum = parseInt(parts[2]) || 0;
-                    poCounter = lastNum + 1;
-                }
-            }
             
             const counter = poCounter.toString().padStart(3, '0');
             const poNumber = `GM11.${year}${month}${day}.${counter}`;
@@ -1614,7 +1680,6 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${itemCount}</td>
-                <td><input type="text" class="item-code" value="${item ? item.code : ''}" placeholder="Kode barang" onchange="calculateRow(this)"></td>
                 <td><input type="text" class="item-name" value="${item ? item.name : ''}" placeholder="Nama barang" onchange="calculateRow(this)"></td>
                 <td><input type="number" class="item-qty" value="${item ? item.qty : 1}" min="1" step="1" onchange="calculateRow(this)"></td>
                 <td>
@@ -1737,7 +1802,6 @@
             const rows = document.querySelectorAll('#itemsBody tr');
             rows.forEach(row => {
                 const item = {
-                    code: row.querySelector('.item-code').value,
                     name: row.querySelector('.item-name').value,
                     qty: parseFloat(row.querySelector('.item-qty').value) || 0,
                     unit: row.querySelector('.item-unit').value,
@@ -1784,11 +1848,11 @@
         
         function resetForm() {
             if (confirm('Apakah Anda yakin ingin mereset form? Semua data yang belum disimpan akan hilang.')) {
-                document.getElementById('companyName').value = 'PT. GRAND MITRA BANGUNAM';
+                document.getElementById('companyName').value = 'PT. GRAND MITRA BANGUNAN';
                 document.getElementById('companyAddress').value = 'THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272';
-                document.getElementById('supplierName').value = 'KARYA WIGUNA INDAH, PT. (S0154)';
-                document.getElementById('supplierAddress').value = 'JAKARTA UTARA';
-                document.getElementById('supplierPhone').value = '021-12345678';
+                document.getElementById('supplierName').value = '';
+                document.getElementById('supplierAddress').value = '';
+                document.getElementById('supplierPhone').value = '';
                 document.getElementById('notes').value = 'PO URGENT - Segera diproses';
                 document.getElementById('entryBy').value = 'ADAM';
                 document.getElementById('approvedBy').value = 'SOFYAN';
@@ -1971,7 +2035,7 @@
         }
         
         // ==============================
-        // PRINT/EXPORT FUNCTIONS - DIPERBARUI sesuai gambar
+        // PRINT FUNCTIONS - DIPERBAIKI untuk mobile
         // ==============================
         
         function showPrintModal(po = null) {
@@ -1997,7 +2061,6 @@
                 const rows = document.querySelectorAll('#itemsBody tr');
                 rows.forEach(row => {
                     const item = {
-                        code: row.querySelector('.item-code').value,
                         name: row.querySelector('.item-name').value,
                         qty: parseFloat(row.querySelector('.item-qty').value) || 0,
                         unit: row.querySelector('.item-unit').value,
@@ -2017,7 +2080,7 @@
             
             const printContainer = document.getElementById('printContainer');
             
-            // Format tanggal untuk cetakan
+            // Format tanggal
             const dateObj = new Date(po.date);
             const formattedDate = dateObj.toLocaleDateString('id-ID', {
                 day: '2-digit',
@@ -2038,7 +2101,7 @@
                 itemsHtml += `
                     <tr>
                         <td class="text-center">${index + 1}</td>
-                        <td>${item.code || ''} ${item.name || '-'}</td>
+                        <td>${item.name || '-'}</td>
                         <td class="text-center">${item.qty} ${item.unit}</td>
                         <td class="text-right">${formatCurrencyPrint(item.price)}</td>
                         <td class="text-center">${item.discount}</td>
@@ -2048,27 +2111,27 @@
                 `;
             });
             
-            // Generate print content sesuai gambar
+            // Generate print content sesuai gambar baru
             printContainer.innerHTML = `
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <!-- Header Perusahaan -->
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h2 style="margin: 0; font-size: 16px; font-weight: bold;">${po.companyName}</h2>
-                        <p style="margin: 5px 0; font-size: 11px;">${po.companyAddress}</p>
+                <div style="max-width: 800px; margin: 0 auto; background: white; color: black;">
+                    <!-- Header Perusahaan sesuai gambar baru -->
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">${po.supplierName || 'ANGELS WINGS'}</h2>
+                        <p style="margin: 2px 0; font-size: 12px; text-transform: uppercase;">${po.supplierAddress || 'PIK2'}</p>
                     </div>
                     
                     <!-- Judul PO -->
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h1 style="margin: 0; font-size: 18px; text-decoration: underline;">PURCHASE ORDER</h1>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <h1 style="margin: 0; font-size: 18px; font-weight: bold; text-transform: uppercase;">PURCHASE ORDER</h1>
                     </div>
                     
                     <!-- Info PO dan Supplier -->
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 11px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 11px;">
                         <div style="flex: 1;">
                             <p style="margin: 2px 0;"><strong>Kepada:</strong></p>
-                            <p style="margin: 2px 0;">${po.supplierName}</p>
-                            <p style="margin: 2px 0;">${po.supplierAddress}</p>
-                            <p style="margin: 2px 0;">Telp: ${po.supplierPhone}</p>
+                            <p style="margin: 2px 0;">${po.companyName}</p>
+                            <p style="margin: 2px 0;">${po.supplierAddress || 'PIK2'}</p>
+                            <p style="margin: 2px 0;">Telp: ${po.supplierPhone || '021-12345678'}</p>
                         </div>
                         <div style="flex: 1; text-align: right;">
                             <p style="margin: 2px 0;"><strong>No. PO:</strong> ${po.poNumber}</p>
@@ -2095,8 +2158,8 @@
                     </table>
                     
                     <!-- Keterangan -->
-                    <div style="margin: 15px 0; font-size: 11px;">
-                        <p style="margin: 5px 0;"><strong>Keterangan :</strong> ${po.notes || '-'}</p>
+                    <div style="margin: 10px 0; font-size: 11px;">
+                        <p style="margin: 5px 0;"><strong>Keterangan :</strong> ${po.notes || 'PO URGENT - Segera diproses'}</p>
                     </div>
                     
                     <!-- Tabel Total -->
@@ -2138,7 +2201,7 @@
                     </div>
                     
                     <!-- Tanggal & Waktu -->
-                    <div style="text-align: right; margin-top: 30px; font-size: 11px;">
+                    <div style="text-align: right; margin-top: 20px; font-size: 11px;">
                         <p style="margin: 0;">${currentDateTime}</p>
                         <p style="margin: 0;">Tanggal & Waktu</p>
                     </div>
@@ -2152,26 +2215,71 @@
             document.getElementById('printModal').classList.remove('active');
         }
         
-        function printDocument() {
+        // Fungsi print yang diperbaiki untuk mobile dan desktop
+        function printPO() {
+            // Simpan konten print ke hidden div
             const printContent = document.getElementById('printContainer').innerHTML;
-            const originalContent = document.body.innerHTML;
+            const printSection = document.getElementById('printSection');
             
-            document.body.innerHTML = `
-                <div style="padding: 20px; font-family: Arial, sans-serif; font-size: 12px;">
+            // Bersihkan dan set konten untuk print
+            printSection.innerHTML = `
+                <div style="padding: 20px; font-family: Arial, sans-serif; font-size: 12px; color: black; background: white;">
                     ${printContent}
                 </div>
             `;
             
+            // Tampilkan section print
+            printSection.style.display = 'block';
+            
+            // Simpan konten asli body
+            const originalBody = document.body.innerHTML;
+            
+            // Ganti body dengan konten print saja
+            document.body.innerHTML = printSection.innerHTML;
+            
+            // Tambahkan style untuk print
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @media print {
+                    body {
+                        margin: 0;
+                        padding: 20px;
+                        background: white !important;
+                        color: black !important;
+                    }
+                    * {
+                        box-shadow: none !important;
+                        text-shadow: none !important;
+                    }
+                    table, th, td {
+                        border: 1px solid black !important;
+                        background: white !important;
+                        color: black !important;
+                    }
+                    th {
+                        background-color: #f0f0f0 !important;
+                    }
+                    .no-print {
+                        display: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Trigger print
             window.print();
             
-            document.body.innerHTML = originalContent;
+            // Kembalikan ke konten asli
+            document.body.innerHTML = originalBody;
+            printSection.style.display = 'none';
             
+            // Re-initialize setelah printing
             initData();
             closePrintModal();
         }
         
         // ==============================
-        // UTILITY FUNCTIONS - DIPERBARUI
+        // UTILITY FUNCTIONS
         // ==============================
         
         // Format currency untuk input (tanpa Rp)
@@ -2185,7 +2293,6 @@
         // Parse currency dari string input
         function parseCurrency(currencyString) {
             if (!currencyString) return 0;
-            // Hapus semua karakter non-digit kecuali titik dan koma
             const cleaned = currencyString.toString()
                 .replace(/[^0-9.,]/g, '')
                 .replace(/\./g, '')
