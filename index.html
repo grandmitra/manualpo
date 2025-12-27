@@ -3,98 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Pembuatan Purchase Order</title>
+    <title>Aplikasi Purchase Order Management</title>
     <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --sidebar-width: 250px;
+        }
+        
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
         
         body {
-            margin: 0;
-            padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            min-height: 100vh;
+            display: flex;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        
+        .logo {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .logo span {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .nav-menu {
+            list-style: none;
+            padding: 0 15px;
+        }
+        
+        .nav-item {
+            margin-bottom: 10px;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+        
+        .nav-link i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 20px;
             min-height: 100vh;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .header {
+            background: white;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-            position: relative;
-            font-weight: 700;
-            font-size: 2.2rem;
-        }
-        
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 3px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid #e1e1e1;
             border-radius: 15px;
-            background-color: #f8f9fa;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .form-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        
-        .form-section h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            font-size: 1.3rem;
+        .header h2 {
+            color: var(--dark);
+            font-size: 1.8rem;
             display: flex;
             align-items: center;
             gap: 10px;
         }
         
-        .form-section h3::before {
-            content: '📋';
-            font-size: 1.2rem;
+        .header h2 i {
+            color: var(--primary);
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .card.total .card-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .card.pending .card-icon { background: linear-gradient(135deg, #f8961e 0%, #f9c74f 100%); color: white; }
+        .card.completed .card-icon { background: linear-gradient(135deg, #4cc9f0 0%, #4895ef 100%); color: white; }
+        .card.amount .card-icon { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        
+        .card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Form Styles (from previous design) */
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .form-section h3 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .form-row {
             display: flex;
             flex-wrap: wrap;
-            margin-bottom: 15px;
             gap: 20px;
+            margin-bottom: 20px;
         }
         
         .form-group {
@@ -106,8 +220,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #495057;
-            font-size: 0.95rem;
+            color: var(--dark);
         }
         
         .form-group input, .form-group textarea, .form-group select {
@@ -117,20 +230,15 @@
             border-radius: 10px;
             font-size: 14px;
             transition: all 0.3s;
-            background: white;
         }
         
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        .form-group input:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
         
-        .form-group textarea {
-            height: 80px;
-            resize: vertical;
-        }
-        
+        /* Items Table */
         .items-section {
             overflow-x: auto;
             margin: 20px 0;
@@ -138,50 +246,30 @@
         
         .items-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse;
             margin: 20px 0;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            min-width: 1000px; /* Minimum width for better mobile scrolling */
+            min-width: 1000px;
         }
         
         .items-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            font-weight: 600;
             padding: 15px 12px;
             text-align: left;
-            border: none;
-            position: sticky;
-            top: 0;
+            font-weight: 600;
         }
         
         .items-table td {
             padding: 12px;
             border-bottom: 1px solid #e1e1e1;
             background: white;
-            vertical-align: top;
-        }
-        
-        .items-table tr:nth-child(even) td {
-            background-color: #f8f9fa;
         }
         
         .items-table tr:hover td {
-            background-color: #f0f4ff;
+            background-color: #f8f9ff;
         }
         
-        /* Proporsional kolom sesuai permintaan */
-        .items-table th:nth-child(1) { width: 4%; }    /* NO */
-        .items-table th:nth-child(2) { width: 45%; }   /* NAMA BARANG - DILEBAR */
-        .items-table th:nth-child(3) { width: 8%; }    /* QTY */
-        .items-table th:nth-child(4) { width: 12%; }   /* HARGA SAT - DIKECILKAN */
-        .items-table th:nth-child(5) { width: 7%; }    /* DISC % */
-        .items-table th:nth-child(6) { width: 12%; }   /* DISC TOTAL - DIKECILKAN */
-        .items-table th:nth-child(7) { width: 12%; }   /* JUMLAH */
-        
+        /* Buttons */
         .btn {
             padding: 12px 24px;
             border: none;
@@ -196,61 +284,178 @@
             gap: 8px;
         }
         
-        .btn i {
-            font-size: 16px;
-        }
-        
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
         }
         
-        .btn-secondary {
-            background: #6c757d;
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             color: white;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-2px);
         }
         
         .btn-danger {
-            background: #e74c3c;
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
             color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f8961e 0%, #f9c74f 100%);
+            color: white;
+        }
+        
+        .btn-sm {
             padding: 6px 12px;
             font-size: 12px;
         }
         
-        .btn-danger:hover {
-            background: #c0392b;
-            transform: scale(1.05);
-        }
-        
-        .btn-success {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background: #219653;
-            transform: translateY(-2px);
-        }
-        
-        .actions {
+        .form-controls, .actions {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 30px;
             gap: 15px;
+            margin-top: 20px;
             flex-wrap: wrap;
         }
         
-        .print-modal {
+        /* PO List Table */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-top: 20px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .po-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .po-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark);
+            border-bottom: 2px solid #e1e1e1;
+        }
+        
+        .po-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e1e1e1;
+        }
+        
+        .po-table tr:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-draft { background: #e3f2fd; color: #1976d2; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-approved { background: #e8f5e9; color: #388e3c; }
+        .status-rejected { background: #ffebee; color: #d32f2f; }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .page-size-selector select {
+            padding: 8px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .page-numbers {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover, .page-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* Modal Styles */
+        .modal {
             display: none;
             position: fixed;
             top: 0;
@@ -259,17 +464,22 @@
             height: 100%;
             background: rgba(0,0,0,0.8);
             z-index: 1000;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            overflow-y: auto;
         }
         
-        .print-modal-content {
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
             background: white;
-            margin: 20px auto;
-            max-width: 800px;
             border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             animation: modalSlideIn 0.3s ease;
         }
         
@@ -279,17 +489,20 @@
         }
         
         .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-radius: 15px 15px 0 0;
         }
         
-        .modal-header h2 {
+        .modal-header h3 {
             margin: 0;
-            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .close-btn {
@@ -312,231 +525,83 @@
             transform: rotate(90deg);
         }
         
+        /* Print Container */
         .print-container {
             padding: 30px;
             font-family: 'Times New Roman', serif;
         }
         
-        .print-header {
-            border-bottom: 3px solid #333;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+            
+            .sidebar .logo h1,
+            .sidebar .logo span,
+            .sidebar .nav-link span {
+                display: none;
+            }
+            
+            .sidebar .nav-link {
+                justify-content: center;
+                padding: 15px 10px;
+            }
+            
+            .sidebar .nav-link i {
+                font-size: 1.5rem;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
         }
         
-        .company-info {
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        
-        .po-info {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-            font-size: 14px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .po-info > div {
-            flex: 1;
-            min-width: 300px;
-        }
-        
-        .print-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 25px 0;
-            font-size: 13px;
-        }
-        
-        .print-table th, .print-table td {
-            border: 1px solid #333;
-            padding: 8px;
-            text-align: left;
-        }
-        
-        .print-table th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-        }
-        
-        /* Proporsional kolom untuk print */
-        .print-table th:nth-child(1) { width: 4%; }
-        .print-table th:nth-child(2) { width: 50%; } /* Lebih lebar untuk print */
-        .print-table th:nth-child(3) { width: 8%; }
-        .print-table th:nth-child(4) { width: 10%; }
-        .print-table th:nth-child(5) { width: 6%; }
-        .print-table th:nth-child(6) { width: 10%; }
-        .print-table th:nth-child(7) { width: 12%; }
-        
-        .totals {
-            margin-top: 25px;
-            text-align: right;
-            font-size: 14px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .signatures {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        
-        .signature-box {
-            text-align: center;
-            flex: 1;
-            min-width: 200px;
-            padding-top: 60px;
-            border-top: 2px solid #333;
-            position: relative;
-        }
-        
-        .signature-box::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 1px;
-            background: #333;
-        }
-        
-        .modal-actions {
-            padding: 20px;
-            background: #f8f9fa;
-            border-top: 1px solid #e1e1e1;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-        }
-        
-        .currency::before {
-            content: "Rp ";
-        }
-        
-        .currency-input {
-            text-align: right;
-            font-family: monospace;
-        }
-        
-        .auto-generate-btn {
-            margin-top: 5px;
-            padding: 6px 12px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s;
-        }
-        
-        .auto-generate-btn:hover {
-            background: #219653;
-            transform: translateY(-1px);
-        }
-        
-        /* Responsive Design */
         @media (max-width: 768px) {
-            body {
+            .main-content {
+                margin-left: 0;
                 padding: 10px;
-                background: #f5f5f5;
             }
             
-            .container {
-                padding: 15px;
-                border-radius: 10px;
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
             }
             
-            h1 {
-                font-size: 1.8rem;
+            .sidebar.active {
+                transform: translateX(0);
             }
             
-            .form-section {
-                padding: 15px;
-            }
-            
-            .form-group {
-                min-width: 100%;
-            }
-            
-            .items-table {
-                font-size: 13px;
-            }
-            
-            .items-table th,
-            .items-table td {
-                padding: 8px 6px;
-            }
-            
-            .btn {
-                padding: 10px 15px;
-                font-size: 13px;
-                width: 100%;
-            }
-            
-            .actions {
-                flex-direction: column;
-            }
-            
-            .modal-header h2 {
-                font-size: 1.2rem;
-            }
-            
-            .print-container {
-                padding: 15px;
-            }
-            
-            .po-info > div {
-                min-width: 100%;
-            }
-            
-            .signatures {
-                flex-direction: column;
+            .mobile-menu-btn {
+                display: block !important;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 101;
+                background: var(--primary);
+                color: white;
+                border: none;
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                font-size: 1.5rem;
+                cursor: pointer;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             }
         }
         
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            
-            .print-container, .print-container * {
-                visibility: visible;
-            }
-            
-            .print-container {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                padding: 0;
-                margin: 0;
-                background: white;
-            }
-            
-            .no-print {
-                display: none !important;
-            }
+        .mobile-menu-btn {
+            display: none;
         }
         
-        .form-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
+        /* Notification */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
             padding: 15px 25px;
-            background: #27ae60;
+            background: var(--success);
             color: white;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
@@ -550,148 +615,453 @@
         }
         
         .notification.error {
-            background: #e74c3c;
+            background: var(--danger);
+        }
+        
+        .notification.warning {
+            background: var(--warning);
+        }
+        
+        /* Total Block for Print */
+        .totals-block {
+            margin: 20px 0 30px 0;
+            padding: 0;
+            width: 100%;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: 2px 0;
+            font-size: 14px;
+        }
+        
+        .total-label {
+            width: 150px;
+            text-align: right;
+            padding-right: 10px;
+            font-weight: bold;
+        }
+        
+        .total-value {
+            width: 200px;
+            text-align: right;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .grand-total-row {
+            display: flex;
+            justify-content: flex-end;
+            margin: 15px 0 0 0;
+            font-size: 16px;
+            font-weight: bold;
+            border-top: 2px solid #333;
+            padding-top: 10px;
+        }
+        
+        .grand-total-label {
+            width: 150px;
+            text-align: right;
+            padding-right: 10px;
+        }
+        
+        .grand-total-value {
+            width: 200px;
+            text-align: right;
+            color: #000;
+            font-size: 18px;
+        }
+        
+        .currency::before {
+            content: "Rp ";
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="container no-print">
-        <h1><i class="fas fa-file-invoice-dollar"></i> Aplikasi Pembuatan Purchase Order</h1>
-        
-        <div class="form-section">
-            <h3>Informasi Perusahaan & PO</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="companyName">Nama Perusahaan</label>
-                    <input type="text" id="companyName" value="PT. GRAND MITRA BANGUNAN">
-                </div>
-                <div class="form-group">
-                    <label for="companyAddress">Alamat Perusahaan</label>
-                    <textarea id="companyAddress">THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272</textarea>
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="logo">
+            <h1><i class="fas fa-file-invoice-dollar"></i> PO System</h1>
+            <span>Purchase Order Management</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#dashboard" class="nav-link active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#buat-po" class="nav-link" data-page="buat-po">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Buat PO Baru</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#daftar-po" class="nav-link" data-page="daftar-po">
+                    <i class="fas fa-list"></i>
+                    <span>Daftar PO</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#export" class="nav-link" data-page="export">
+                    <i class="fas fa-file-export"></i>
+                    <span>Export Data</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Page -->
+        <div class="page active" id="dashboard">
+            <div class="header">
+                <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                <div class="date-info">
+                    <i class="fas fa-calendar"></i> <span id="currentDate"></span>
                 </div>
             </div>
             
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="poNumber">Nomor PO <span style="color: #667eea; font-size: 0.9em;">(Format: GM11.YYMMDD.XXX)</span></label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="poNumber" value="GM11.251027.001" style="flex: 1;">
-                        <button type="button" class="auto-generate-btn" onclick="generatePONumber()">
-                            <i class="fas fa-sync-alt"></i> Auto Generate
+            <div class="dashboard-cards">
+                <div class="card total">
+                    <div class="card-icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <h3 id="totalPO">0</h3>
+                    <p>Total Purchase Order</p>
+                </div>
+                <div class="card pending">
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 id="pendingPO">0</h3>
+                    <p>PO Pending</p>
+                </div>
+                <div class="card completed">
+                    <div class="card-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 id="approvedPO">0</h3>
+                    <p>PO Disetujui</p>
+                </div>
+                <div class="card amount">
+                    <div class="card-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h3 class="currency" id="totalAmount">0</h3>
+                    <p>Total Nilai PO</p>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <h3><i class="fas fa-history"></i> PO Terbaru</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="po-table" id="recentPOs">
+                        <thead>
+                            <tr>
+                                <th>No PO</th>
+                                <th>Supplier</th>
+                                <th>Tanggal</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Recent POs will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Buat PO Page -->
+        <div class="page" id="buat-po">
+            <div class="header">
+                <h2><i class="fas fa-plus-circle"></i> Buat Purchase Order Baru</h2>
+            </div>
+            
+            <div class="form-section">
+                <h3><i class="fas fa-building"></i> Informasi Perusahaan & PO</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="companyName">Nama Perusahaan</label>
+                        <input type="text" id="companyName" value="PT. GRAND MITRA BANGUNAM">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyAddress">Alamat Perusahaan</label>
+                        <textarea id="companyAddress">THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272</textarea>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="poNumber">Nomor PO <small>(Format: GM11.YYMMDD.XXX)</small></label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="poNumber" style="flex: 1;">
+                            <button type="button" class="btn btn-sm btn-success" onclick="generatePONumber()">
+                                <i class="fas fa-sync-alt"></i> Auto Generate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="poDate">Tanggal PO</label>
+                        <input type="date" id="poDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="poStatus">Status PO</label>
+                        <select id="poStatus">
+                            <option value="draft">Draft</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Disetujui</option>
+                            <option value="rejected">Ditolak</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3><i class="fas fa-truck"></i> Informasi Supplier</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="supplierName">Nama Supplier</label>
+                        <input type="text" id="supplierName" value="KARYA WIGUNA INDAH, PT. (S0154)">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplierAddress">Alamat Supplier</label>
+                        <input type="text" id="supplierAddress" value="JAKARTA UTARA">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplierPhone">Telepon Supplier</label>
+                        <input type="text" id="supplierPhone" value="021-12345678">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3><i class="fas fa-boxes"></i> Daftar Barang</h3>
+                <div class="items-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th width="5%">NO</th>
+                                <th width="35%">NAMA BARANG</th>
+                                <th width="10%">QTY</th>
+                                <th width="12%">HARGA SAT</th>
+                                <th width="8%">DISC %</th>
+                                <th width="12%">DISC TOTAL</th>
+                                <th width="13%">JUMLAH</th>
+                                <th width="5%">AKSI</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody">
+                            <!-- Item rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-controls">
+                    <button type="button" class="btn btn-success" id="addItemBtn">
+                        <i class="fas fa-plus-circle"></i> Tambah Barang
+                    </button>
+                    <button type="button" class="btn btn-warning" id="clearItemsBtn">
+                        <i class="fas fa-trash-alt"></i> Hapus Semua
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3><i class="fas fa-sticky-note"></i> Keterangan & Informasi Tambahan</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="notes">Keterangan</label>
+                        <textarea id="notes">PO URGENT - Segera diproses</textarea>
+                    </div>
+                    <div class="form-row" style="flex: 1; gap: 20px;">
+                        <div class="form-group">
+                            <label for="entryBy">Entry Oleh</label>
+                            <input type="text" id="entryBy" value="ADAM">
+                        </div>
+                        <div class="form-group">
+                            <label for="approvedBy">Menyetujui</label>
+                            <input type="text" id="approvedBy" value="SOFYAN">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button type="button" class="btn btn-primary" id="previewBtn">
+                    <i class="fas fa-eye"></i> Preview PO
+                </button>
+                <button type="button" class="btn btn-warning" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset Form
+                </button>
+                <button type="button" class="btn btn-success" id="saveBtn">
+                    <i class="fas fa-save"></i> Simpan PO
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveDraft()">
+                    <i class="fas fa-file-download"></i> Simpan Draft
+                </button>
+            </div>
+        </div>
+        
+        <!-- Daftar PO Page -->
+        <div class="page" id="daftar-po">
+            <div class="header">
+                <h2><i class="fas fa-list"></i> Daftar Purchase Order</h2>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchPO" placeholder="Cari berdasarkan No PO, Supplier, atau Status...">
+                    </div>
+                    <div class="filter-controls">
+                        <select id="statusFilter" style="padding: 10px; border-radius: 10px; border: 2px solid #e1e1e1;">
+                            <option value="">Semua Status</option>
+                            <option value="draft">Draft</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Disetujui</option>
+                            <option value="rejected">Ditolak</option>
+                        </select>
+                        <button class="btn btn-sm btn-warning" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Reset
                         </button>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="poDate">Tanggal PO</label>
-                    <input type="date" id="poDate" value="2025-10-27">
+                
+                <div class="table-responsive">
+                    <table class="po-table" id="poListTable">
+                        <thead>
+                            <tr>
+                                <th>No PO</th>
+                                <th>Supplier</th>
+                                <th>Tanggal</th>
+                                <th>Jumlah Item</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- PO List will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="pagination">
+                    <div class="page-size-selector">
+                        <span>Show:</span>
+                        <select id="pageSize" onchange="loadPOList()">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pagination-controls">
+                        <button class="btn btn-sm" onclick="changePage(-1)">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        
+                        <div class="page-numbers" id="pageNumbers">
+                            <!-- Page numbers will be generated here -->
+                        </div>
+                        
+                        <button class="btn btn-sm" onclick="changePage(1)">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="page-info">
+                        Showing <span id="startRow">1</span>-<span id="endRow">10</span> of <span id="totalRows">0</span> items
+                    </div>
                 </div>
             </div>
         </div>
         
-        <div class="form-section">
-            <h3>Informasi Supplier</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="supplierName">Nama Supplier</label>
-                    <input type="text" id="supplierName" value="KARYA WIGUNA INDAH, PT. (S0154)">
-                </div>
-                <div class="form-group">
-                    <label for="supplierAddress">Alamat Supplier</label>
-                    <input type="text" id="supplierAddress" value="JAKARTA UTARA">
-                </div>
-            </div>
-        </div>
-        
-        <div class="form-section">
-            <h3>Daftar Barang</h3>
-            <div class="items-section">
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th>NO</th>
-                            <th>NAMA BARANG</th>
-                            <th>QTY</th>
-                            <th>HARGA SAT</th>
-                            <th>DISC %</th>
-                            <th>DISC TOTAL</th>
-                            <th>JUMLAH</th>
-                            <th style="width: 5%;">AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsBody">
-                        <!-- Item rows will be added here -->
-                    </tbody>
-                </table>
+        <!-- Export Page -->
+        <div class="page" id="export">
+            <div class="header">
+                <h2><i class="fas fa-file-export"></i> Export Data</h2>
             </div>
             
-            <div class="form-controls">
-                <button type="button" class="btn btn-success" id="addItemBtn">
-                    <i class="fas fa-plus-circle"></i> Tambah Barang
-                </button>
-                <button type="button" class="btn btn-secondary" id="clearItemsBtn">
-                    <i class="fas fa-trash-alt"></i> Hapus Semua
-                </button>
-            </div>
-        </div>
-        
-        <div class="form-section">
-            <h3>Keterangan & Informasi Tambahan</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="notes">Keterangan</label>
-                    <textarea id="notes">PO URGENT - Segera diproses</textarea>
-                </div>
-                <div class="form-row" style="flex: 1; gap: 20px;">
+            <div class="form-section">
+                <h3><i class="fas fa-download"></i> Export Options</h3>
+                <div class="form-row">
                     <div class="form-group">
-                        <label for="entryBy">Entry Oleh</label>
-                        <input type="text" id="entryBy" value="ADAM">
+                        <label for="exportFormat">Format Export</label>
+                        <select id="exportFormat">
+                            <option value="csv">CSV (Excel)</option>
+                            <option value="json">JSON</option>
+                            <option value="pdf">PDF</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="approvedBy">Menyetujui</label>
-                        <input type="text" id="approvedBy" value="SOFYAN">
+                        <label for="dateFrom">Dari Tanggal</label>
+                        <input type="date" id="dateFrom">
                     </div>
+                    <div class="form-group">
+                        <label for="dateTo">Sampai Tanggal</label>
+                        <input type="date" id="dateTo">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="exportStatus">Status</label>
+                        <select id="exportStatus" multiple style="height: 120px;">
+                            <option value="all" selected>Semua Status</option>
+                            <option value="draft">Draft</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Disetujui</option>
+                            <option value="rejected">Ditolak</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-success" onclick="exportData()">
+                        <i class="fas fa-file-export"></i> Export Data
+                    </button>
+                    <button class="btn btn-primary" onclick="clearLocalStorage()">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <div class="actions">
-            <button type="button" class="btn btn-primary" id="previewBtn">
-                <i class="fas fa-eye"></i> Preview PO
-            </button>
-            <button type="button" class="btn btn-secondary" id="resetBtn">
-                <i class="fas fa-redo"></i> Reset Form
-            </button>
-            <button type="button" class="btn btn-success" id="saveBtn">
-                <i class="fas fa-save"></i> Simpan Draft
-            </button>
-            <button type="button" class="btn btn-primary" id="printBtn">
-                <i class="fas fa-print"></i> Cetak PO
-            </button>
-        </div>
-    </div>
+    </main>
     
     <!-- Print Modal -->
-    <div class="print-modal" id="printModal">
-        <div class="print-modal-content">
+    <div class="modal" id="printModal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h2><i class="fas fa-print"></i> Preview Purchase Order</h2>
+                <h3><i class="fas fa-print"></i> Preview Purchase Order</h3>
                 <button class="close-btn" onclick="closePrintModal()">&times;</button>
             </div>
-            
             <div class="print-container" id="printContainer">
-                <!-- Content will be inserted here -->
+                <!-- Print content will be inserted here -->
             </div>
-            
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closePrintModal()">
+            <div class="modal-actions" style="padding: 20px; text-align: right;">
+                <button class="btn btn-warning" onclick="closePrintModal()">
                     <i class="fas fa-times"></i> Tutup
                 </button>
-                <button type="button" class="btn btn-primary" onclick="printDocument()">
-                    <i class="fas fa-print"></i> Cetak Dokumen
-                </button>
-                <button type="button" class="btn btn-success" onclick="saveAsPDF()">
-                    <i class="fas fa-file-pdf"></i> Simpan PDF
+                <button class="btn btn-primary" onclick="printDocument()">
+                    <i class="fas fa-print"></i> Cetak
                 </button>
             </div>
         </div>
@@ -699,13 +1069,439 @@
     
     <!-- Notification -->
     <div class="notification" id="notification"></div>
-
+    
     <script>
-        // Auto increment counter for PO number
+        // ==============================
+        // DATA MANAGEMENT
+        // ==============================
+        const STORAGE_KEY = 'po_management_data';
+        let poData = [];
+        let currentPage = 1;
+        let pageSize = 10;
+        let totalPages = 1;
+        let currentEditId = null;
         let poCounter = 1;
         let itemCount = 0;
         
-        // Sample data for the item
+        // Initialize data from localStorage
+        function initData() {
+            const savedData = localStorage.getItem(STORAGE_KEY);
+            if (savedData) {
+                poData = JSON.parse(savedData);
+                // Get highest PO counter
+                const maxNumber = poData.reduce((max, po) => {
+                    const match = po.poNumber.match(/\.(\d{3})$/);
+                    if (match) {
+                        const num = parseInt(match[1]);
+                        return num > max ? num : max;
+                    }
+                    return max;
+                }, 0);
+                poCounter = maxNumber + 1;
+            }
+            
+            // Set current date
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Set default PO date to today
+            document.getElementById('poDate').valueAsDate = new Date();
+            
+            // Generate initial PO number
+            generatePONumber();
+            
+            // Load initial data
+            updateDashboard();
+            loadPOList();
+            
+            // Add sample item
+            addItemRow();
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(poData));
+        }
+        
+        // ==============================
+        // NAVIGATION
+        // ==============================
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.getAttribute('data-page');
+                    showPage(pageId);
+                    
+                    // Update active state
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    
+                    // Close mobile sidebar
+                    document.getElementById('sidebar').classList.remove('active');
+                });
+            });
+            
+            // Mobile menu button
+            document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('active');
+            });
+            
+            // Show dashboard by default
+            showPage('dashboard');
+        }
+        
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+        
+        // ==============================
+        // DASHBOARD
+        // ==============================
+        function updateDashboard() {
+            const totalPO = poData.length;
+            const pendingPO = poData.filter(po => po.status === 'pending').length;
+            const approvedPO = poData.filter(po => po.status === 'approved').length;
+            const totalAmount = poData.reduce((sum, po) => sum + po.grandTotal, 0);
+            
+            document.getElementById('totalPO').textContent = totalPO;
+            document.getElementById('pendingPO').textContent = pendingPO;
+            document.getElementById('approvedPO').textContent = approvedPO;
+            document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+            
+            // Show recent POs
+            showRecentPOs();
+        }
+        
+        function showRecentPOs() {
+            const tbody = document.querySelector('#recentPOs tbody');
+            tbody.innerHTML = '';
+            
+            const recentPOs = [...poData]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            recentPOs.forEach(po => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${po.poNumber}</strong></td>
+                    <td>${po.supplierName}</td>
+                    <td>${formatDate(po.date)}</td>
+                    <td class="currency">${formatCurrency(po.grandTotal)}</td>
+                    <td><span class="status-badge status-${po.status}">${getStatusText(po.status)}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewPO('${po.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        // ==============================
+        // PO LIST TABLE
+        // ==============================
+        function loadPOList() {
+            const searchTerm = document.getElementById('searchPO').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            pageSize = document.getElementById('pageSize').value === 'all' ? poData.length : parseInt(document.getElementById('pageSize').value);
+            
+            // Filter data
+            let filteredData = poData.filter(po => {
+                const matchesSearch = !searchTerm || 
+                    po.poNumber.toLowerCase().includes(searchTerm) ||
+                    po.supplierName.toLowerCase().includes(searchTerm);
+                const matchesStatus = !statusFilter || po.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+            
+            // Calculate pagination
+            totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+            
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, filteredData.length);
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            // Update table
+            const tbody = document.querySelector('#poListTable tbody');
+            tbody.innerHTML = '';
+            
+            pageData.forEach(po => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${po.poNumber}</strong></td>
+                    <td>${po.supplierName}</td>
+                    <td>${formatDate(po.date)}</td>
+                    <td>${po.items.length} item</td>
+                    <td class="currency">${formatCurrency(po.grandTotal)}</td>
+                    <td><span class="status-badge status-${po.status}">${getStatusText(po.status)}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-sm btn-primary" onclick="viewPO('${po.id}')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="editPO('${po.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePO('${po.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update pagination info
+            document.getElementById('startRow').textContent = filteredData.length > 0 ? startIndex + 1 : 0;
+            document.getElementById('endRow').textContent = endIndex;
+            document.getElementById('totalRows').textContent = filteredData.length;
+            
+            // Generate page numbers
+            generatePageNumbers();
+        }
+        
+        function generatePageNumbers() {
+            const container = document.getElementById('pageNumbers');
+            container.innerHTML = '';
+            
+            // Show max 5 page numbers
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const btn = document.createElement('button');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.textContent = i;
+                btn.onclick = () => {
+                    currentPage = i;
+                    loadPOList();
+                };
+                container.appendChild(btn);
+            }
+        }
+        
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadPOList();
+            }
+        }
+        
+        function resetFilters() {
+            document.getElementById('searchPO').value = '';
+            document.getElementById('statusFilter').value = '';
+            currentPage = 1;
+            loadPOList();
+        }
+        
+        // ==============================
+        // PO CRUD OPERATIONS
+        // ==============================
+        function savePO() {
+            // Validate required fields
+            const poNumber = document.getElementById('poNumber').value;
+            if (!poNumber) {
+                showNotification('Nomor PO harus diisi!', 'error');
+                return;
+            }
+            
+            // Calculate totals
+            let subtotal = 0;
+            let totalDiscount = 0;
+            const items = [];
+            
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+                const price = parseCurrency(row.querySelector('.item-price').value);
+                const discountPercent = parseFloat(row.querySelector('.item-discount-percent').value) || 0;
+                const discountAmount = parseCurrency(row.querySelector('.item-discount-amount').value);
+                const total = parseCurrency(row.querySelector('.item-total').textContent);
+                
+                subtotal += qty * price;
+                totalDiscount += discountAmount;
+                
+                items.push({
+                    code: row.querySelector('.item-code').value,
+                    name: row.querySelector('.item-name').value,
+                    qty: qty,
+                    unit: row.querySelector('.item-unit').value,
+                    price: price,
+                    discountPercent: discountPercent,
+                    discountAmount: discountAmount,
+                    total: total
+                });
+            });
+            
+            if (items.length === 0) {
+                showNotification('Minimal harus ada 1 barang!', 'error');
+                return;
+            }
+            
+            const totalAmount = subtotal - totalDiscount;
+            const tax = totalAmount * 0.11;
+            const grandTotal = totalAmount + tax;
+            
+            const poDataObj = {
+                id: currentEditId || Date.now().toString(),
+                poNumber: poNumber,
+                date: document.getElementById('poDate').value,
+                status: document.getElementById('poStatus').value,
+                companyName: document.getElementById('companyName').value,
+                companyAddress: document.getElementById('companyAddress').value,
+                supplierName: document.getElementById('supplierName').value,
+                supplierAddress: document.getElementById('supplierAddress').value,
+                supplierPhone: document.getElementById('supplierPhone').value,
+                items: items,
+                notes: document.getElementById('notes').value,
+                entryBy: document.getElementById('entryBy').value,
+                approvedBy: document.getElementById('approvedBy').value,
+                subtotal: subtotal,
+                totalDiscount: totalDiscount,
+                totalAmount: totalAmount,
+                tax: tax,
+                grandTotal: grandTotal,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            if (currentEditId) {
+                // Update existing PO
+                const index = poData.findIndex(po => po.id === currentEditId);
+                if (index !== -1) {
+                    poData[index] = { ...poData[index], ...poDataObj };
+                    showNotification('PO berhasil diperbarui!', 'success');
+                }
+                currentEditId = null;
+            } else {
+                // Add new PO
+                poData.push(poDataObj);
+                showNotification('PO berhasil disimpan!', 'success');
+                
+                // Update counter
+                const match = poNumber.match(/\.(\d{3})$/);
+                if (match) {
+                    const num = parseInt(match[1]);
+                    if (num >= poCounter) poCounter = num + 1;
+                }
+            }
+            
+            saveData();
+            updateDashboard();
+            loadPOList();
+            resetForm();
+            showPage('daftar-po');
+        }
+        
+        function editPO(id) {
+            const po = poData.find(p => p.id === id);
+            if (!po) return;
+            
+            currentEditId = id;
+            
+            // Fill form with PO data
+            document.getElementById('poNumber').value = po.poNumber;
+            document.getElementById('poDate').value = po.date;
+            document.getElementById('poStatus').value = po.status;
+            document.getElementById('companyName').value = po.companyName;
+            document.getElementById('companyAddress').value = po.companyAddress;
+            document.getElementById('supplierName').value = po.supplierName;
+            document.getElementById('supplierAddress').value = po.supplierAddress;
+            document.getElementById('supplierPhone').value = po.supplierPhone || '';
+            document.getElementById('notes').value = po.notes;
+            document.getElementById('entryBy').value = po.entryBy;
+            document.getElementById('approvedBy').value = po.approvedBy;
+            
+            // Clear items and add from PO
+            document.getElementById('itemsBody').innerHTML = '';
+            itemCount = 0;
+            po.items.forEach(item => {
+                addItemRow({
+                    code: item.code,
+                    name: item.name,
+                    qty: item.qty.toString(),
+                    unit: item.unit,
+                    price: item.price.toString(),
+                    discountPercent: item.discountPercent.toString(),
+                    discountAmount: item.discountAmount.toString()
+                });
+            });
+            
+            showPage('buat-po');
+            showNotification('Mengedit PO: ' + po.poNumber, 'warning');
+        }
+        
+        function viewPO(id) {
+            const po = poData.find(p => p.id === id);
+            if (!po) return;
+            
+            // Show in print modal
+            showPrintModal(po);
+        }
+        
+        function deletePO(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus PO ini?')) {
+                poData = poData.filter(po => po.id !== id);
+                saveData();
+                updateDashboard();
+                loadPOList();
+                showNotification('PO berhasil dihapus!', 'success');
+            }
+        }
+        
+        // ==============================
+        // FORM FUNCTIONS
+        // ==============================
+        function generatePONumber() {
+            const now = new Date();
+            const year = now.getFullYear().toString().slice(-2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const counter = poCounter.toString().padStart(3, '0');
+            
+            document.getElementById('poNumber').value = `GM11.${year}${month}${day}.${counter}`;
+            document.getElementById('poDate').valueAsDate = now;
+        }
+        
+        function resetForm() {
+            if (confirm('Reset form? Data yang belum disimpan akan hilang.')) {
+                currentEditId = null;
+                document.getElementById('itemsBody').innerHTML = '';
+                itemCount = 0;
+                generatePONumber();
+                document.getElementById('poStatus').value = 'draft';
+                document.getElementById('supplierPhone').value = '021-12345678';
+                document.getElementById('notes').value = 'PO URGENT - Segera diproses';
+                document.getElementById('entryBy').value = 'ADAM';
+                document.getElementById('approvedBy').value = 'SOFYAN';
+                addItemRow();
+                showNotification('Form telah direset', 'warning');
+            }
+        }
+        
+        function saveDraft() {
+            document.getElementById('poStatus').value = 'draft';
+            savePO();
+        }
+        
+        // ==============================
+        // ITEM MANAGEMENT FUNCTIONS
+        // ==============================
         const sampleItem = {
             code: "1023353",
             name: "FULTON MONTE SERA GREY 60X60 @1,44 M2 MATT (SHADE 48)",
@@ -716,49 +1512,6 @@
             discountAmount: "0.00"
         };
         
-        // Initialize with one item
-        document.addEventListener('DOMContentLoaded', function() {
-            generatePONumber();
-            addItemRow(sampleItem);
-        });
-        
-        // Function to generate PO number
-        function generatePONumber() {
-            const now = new Date();
-            const year = now.getFullYear().toString().slice(-2);
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            
-            // Increment counter for new PO
-            poCounter++;
-            const counter = poCounter.toString().padStart(3, '0');
-            
-            document.getElementById('poNumber').value = `GM11.${year}${month}${day}.${counter}`;
-            
-            // Update date field
-            document.getElementById('poDate').value = now.toISOString().split('T')[0];
-            
-            showNotification('Nomor PO berhasil digenerate!');
-        }
-        
-        // Function to parse currency string to number
-        function parseCurrency(value) {
-            if (!value || value === '') return 0;
-            let cleanValue = value.toString()
-                .replace(/Rp\s*/g, '')
-                .replace(/\./g, '')
-                .replace(/,/g, '.');
-            return parseFloat(cleanValue) || 0;
-        }
-        
-        // Function to format number to currency string
-        function formatCurrency(value) {
-            let parts = value.toFixed(2).split('.');
-            let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            return integerPart + ',' + parts[1];
-        }
-        
-        // Function to add a new item row
         function addItemRow(item = null) {
             itemCount++;
             const tbody = document.getElementById('itemsBody');
@@ -773,40 +1526,32 @@
             row.innerHTML = `
                 <td>${itemCount}</td>
                 <td>
-                    <input type="text" class="item-code" placeholder="Kode barang" value="${item ? item.code : ''}" style="width: 80px; margin-bottom: 5px; font-size: 12px;">
+                    <input type="text" class="item-code" placeholder="Kode" value="${item ? item.code : ''}" style="width: 80px; margin-bottom: 5px;">
                     <br>
-                    <textarea class="item-name" placeholder="Nama barang" rows="2" style="width: 100%; font-size: 13px; padding: 8px;">${item ? item.name : ''}</textarea>
+                    <textarea class="item-name" placeholder="Nama barang" rows="2" style="width: 100%;">${item ? item.name : ''}</textarea>
                 </td>
                 <td>
-                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : '1'}" style="width: 50px; font-size: 13px;">
-                    <select class="item-unit" style="width: 70px; margin-top: 5px; font-size: 12px;">
+                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : '1'}" style="width: 50px;">
+                    <select class="item-unit" style="width: 70px; margin-top: 5px;">
                         <option value="DUS" ${item && item.unit === 'DUS' ? 'selected' : ''}>DUS</option>
                         <option value="PCS" ${item && item.unit === 'PCS' ? 'selected' : ''}>PCS</option>
                         <option value="UNIT" ${item && item.unit === 'UNIT' ? 'selected' : ''}>UNIT</option>
-                        <option value="SET" ${item && item.unit === 'SET' ? 'selected' : ''}>SET</option>
-                        <option value="LSN" ${item && item.unit === 'LSN' ? 'selected' : ''}>LSN</option>
                     </select>
                 </td>
                 <td>
-                    <input type="text" class="item-price currency-input" placeholder="0,00" value="${displayPrice}" 
-                           onblur="formatCurrencyInput(this)" style="font-size: 13px;">
+                    <input type="text" class="item-price currency-input" placeholder="0,00" value="${displayPrice}" onblur="formatCurrencyInput(this)">
                 </td>
                 <td>
-                    <input type="text" class="item-discount-percent" placeholder="%" 
-                           value="${item ? item.discountPercent : ''}" style="width: 50px; font-size: 13px;">
+                    <input type="text" class="item-discount-percent" placeholder="%" value="${item ? item.discountPercent : ''}" style="width: 50px;">
                 </td>
                 <td>
-                    <input type="text" class="item-discount-amount currency-input" placeholder="0,00" 
-                           value="${item && item.discountAmount ? formatCurrency(parseFloat(item.discountAmount)) : '0,00'}" 
-                           readonly style="font-size: 13px;">
+                    <input type="text" class="item-discount-amount currency-input" placeholder="0,00" value="${item && item.discountAmount ? formatCurrency(parseFloat(item.discountAmount)) : '0,00'}" readonly>
                 </td>
                 <td>
-                    <span class="item-total currency" style="font-weight: bold; font-size: 13px;">
-                        ${item && item.price ? formatCurrency(parseFloat(item.price) * (parseFloat(item.qty) || 1)) : '0,00'}
-                    </span>
+                    <span class="item-total currency">${item && item.price ? formatCurrency(parseFloat(item.price) * (parseFloat(item.qty) || 1)) : '0,00'}</span>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger" onclick="removeItemRow(${itemCount})">
+                    <button type="button" class="btn btn-sm btn-danger" onclick="removeItemRow(${itemCount})">
                         <i class="fas fa-times"></i>
                     </button>
                 </td>
@@ -814,7 +1559,6 @@
             
             tbody.appendChild(row);
             
-            // Add event listeners
             const inputs = row.querySelectorAll('input, textarea, select');
             inputs.forEach(input => {
                 input.addEventListener('input', calculateRowTotal);
@@ -823,51 +1567,56 @@
             calculateRowTotal({target: row.querySelector('.item-price')});
         }
         
-        // Function to format currency input on blur
-        function formatCurrencyInput(input) {
-            let value = parseCurrency(input.value);
-            input.value = formatCurrency(value);
-            calculateRowTotal({target: input});
-        }
-        
-        // Function to remove an item row
         function removeItemRow(rowId) {
             const row = document.getElementById(`itemRow${rowId}`);
             if (row) {
                 row.remove();
                 renumberItems();
-                updatePrintPreview();
-                showNotification('Barang berhasil dihapus');
             }
         }
         
-        // Function to clear all items
-        function clearAllItems() {
-            if (confirm('Apakah Anda yakin ingin menghapus semua barang?')) {
-                document.getElementById('itemsBody').innerHTML = '';
-                itemCount = 0;
-                showNotification('Semua barang berhasil dihapus');
-            }
-        }
-        
-        // Function to renumber items
         function renumberItems() {
             const rows = document.querySelectorAll('#itemsBody tr');
             itemCount = 0;
-            
             rows.forEach((row, index) => {
                 itemCount++;
                 row.cells[0].textContent = itemCount;
                 row.id = `itemRow${itemCount}`;
-                
-                const removeBtn = row.querySelector('.btn-danger');
-                if (removeBtn) {
-                    removeBtn.setAttribute('onclick', `removeItemRow(${itemCount})`);
-                }
+                row.querySelector('.btn-danger').onclick = () => removeItemRow(itemCount);
             });
         }
         
-        // Function to calculate row total
+        function clearAllItems() {
+            if (confirm('Hapus semua barang?')) {
+                document.getElementById('itemsBody').innerHTML = '';
+                itemCount = 0;
+                addItemRow();
+            }
+        }
+        
+        // ==============================
+        // CALCULATION FUNCTIONS
+        // ==============================
+        function parseCurrency(value) {
+            if (!value) return 0;
+            return parseFloat(value.toString()
+                .replace(/Rp\s*/g, '')
+                .replace(/\./g, '')
+                .replace(/,/g, '.')) || 0;
+        }
+        
+        function formatCurrency(value) {
+            const parts = value.toFixed(2).split('.');
+            const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return integerPart + ',' + parts[1];
+        }
+        
+        function formatCurrencyInput(input) {
+            const value = parseCurrency(input.value);
+            input.value = formatCurrency(value);
+            calculateRowTotal({target: input});
+        }
+        
         function calculateRowTotal(e) {
             const row = e.target.closest('tr');
             if (!row) return;
@@ -877,125 +1626,104 @@
             const discountPercent = parseFloat(row.querySelector('.item-discount-percent').value) || 0;
             
             let discountAmount = 0;
-            
             if (discountPercent > 0) {
                 discountAmount = (qty * price * discountPercent) / 100;
             }
             
             const total = (qty * price) - discountAmount;
             
-            // Update discount amount field
             row.querySelector('.item-discount-amount').value = formatCurrency(discountAmount);
-            
-            // Update total display
             row.querySelector('.item-total').textContent = formatCurrency(total);
         }
         
-        // Function to update print preview
-        function updatePrintPreview() {
-            // Company info
-            const companyName = document.getElementById('companyName').value;
-            const companyAddress = document.getElementById('companyAddress').value;
-            const printCompanyInfo = document.getElementById('printCompanyInfo');
-            if (printCompanyInfo) {
-                printCompanyInfo.innerHTML = `
-                    <strong>${companyName}</strong><br>
-                    ${companyAddress.replace(/\n/g, '<br>')}
-                `;
+        // ==============================
+        // PRINT FUNCTIONS
+        // ==============================
+        function showPrintModal(po = null) {
+            const modal = document.getElementById('printModal');
+            const container = document.getElementById('printContainer');
+            
+            if (po) {
+                // View existing PO
+                container.innerHTML = generatePrintContent(po);
+            } else {
+                // Preview new PO from form
+                container.innerHTML = generatePrintContentFromForm();
             }
             
-            // PO info
-            document.getElementById('printPoNumber').textContent = document.getElementById('poNumber').value;
-            document.getElementById('printPoDate').textContent = formatDate(document.getElementById('poDate').value);
-            document.getElementById('printSupplierName').textContent = document.getElementById('supplierName').value;
-            document.getElementById('printSupplierAddress').textContent = document.getElementById('supplierAddress').value;
+            modal.classList.add('active');
+        }
+        
+        function closePrintModal() {
+            document.getElementById('printModal').classList.remove('active');
+        }
+        
+        function generatePrintContentFromForm() {
+            // Calculate from form
+            let subtotal = 0;
+            let totalDiscount = 0;
+            const items = [];
             
-            // Items table
-            const printTableBody = document.querySelector('#printItemsTable tbody');
-            if (printTableBody) {
-                printTableBody.innerHTML = '';
+            document.querySelectorAll('#itemsBody tr').forEach(row => {
+                const code = row.querySelector('.item-code').value;
+                const name = row.querySelector('.item-name').value;
+                const qty = row.querySelector('.item-qty').value;
+                const unit = row.querySelector('.item-unit').value;
+                const price = parseCurrency(row.querySelector('.item-price').value);
+                const discountPercent = row.querySelector('.item-discount-percent').value;
+                const discountAmount = parseCurrency(row.querySelector('.item-discount-amount').value);
+                const total = parseCurrency(row.querySelector('.item-total').textContent);
                 
-                const itemRows = document.querySelectorAll('#itemsBody tr');
-                let subtotal = 0;
-                let totalDiscount = 0;
+                subtotal += parseFloat(qty) * price;
+                totalDiscount += discountAmount;
                 
-                itemRows.forEach((row, index) => {
-                    const code = row.querySelector('.item-code').value || '';
-                    const name = row.querySelector('.item-name').value || '';
-                    const qty = row.querySelector('.item-qty').value || '0';
-                    const unit = row.querySelector('.item-unit').value || '';
-                    const price = parseCurrency(row.querySelector('.item-price').value);
-                    const discountPercent = row.querySelector('.item-discount-percent').value || '';
-                    const discountAmount = parseCurrency(row.querySelector('.item-discount-amount').value);
-                    const total = parseCurrency(row.querySelector('.item-total').textContent);
-                    
-                    subtotal += qty * price;
-                    totalDiscount += discountAmount;
-                    
-                    const printRow = document.createElement('tr');
-                    printRow.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td><strong>${code}</strong><br>${name}</td>
-                        <td>${qty} ${unit}</td>
-                        <td>${formatCurrency(price)}</td>
-                        <td>${discountPercent}</td>
-                        <td>${formatCurrency(discountAmount)}</td>
-                        <td><strong>${formatCurrency(total)}</strong></td>
-                    `;
-                    
-                    printTableBody.appendChild(printRow);
-                });
-                
-                // Calculate totals
-                const totalAmount = subtotal - totalDiscount;
-                const tax = totalAmount * 0.11;
-                const grandTotal = totalAmount + tax;
-                
-                // Update totals
-                document.getElementById('printSubtotal').textContent = formatCurrency(subtotal);
-                document.getElementById('printTotalDiscount').textContent = formatCurrency(totalDiscount);
-                document.getElementById('printTotalAmount').textContent = formatCurrency(totalAmount);
-                document.getElementById('printTax').textContent = formatCurrency(tax);
-                document.getElementById('printGrandTotal').textContent = formatCurrency(grandTotal);
-                
-                // Notes
-                document.getElementById('printNotes').textContent = `Keterangan : ${document.getElementById('notes').value}`;
-                
-                // Signatures
-                document.getElementById('printEntryBy').innerHTML = `( ${document.getElementById('entryBy').value} )`;
-                document.getElementById('printApprovedBy').innerHTML = `( ${document.getElementById('approvedBy').value} )`;
-                
-                // Timestamp
-                const now = new Date();
-                document.getElementById('printTimestamp').textContent = 
-                    `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-            }
+                items.push({ code, name, qty, unit, price, discountPercent, discountAmount, total });
+            });
+            
+            const totalAmount = subtotal - totalDiscount;
+            const tax = totalAmount * 0.11;
+            const grandTotal = totalAmount + tax;
+            
+            return generatePrintHTML({
+                poNumber: document.getElementById('poNumber').value,
+                date: document.getElementById('poDate').value,
+                companyName: document.getElementById('companyName').value,
+                companyAddress: document.getElementById('companyAddress').value,
+                supplierName: document.getElementById('supplierName').value,
+                supplierAddress: document.getElementById('supplierAddress').value,
+                items: items,
+                notes: document.getElementById('notes').value,
+                entryBy: document.getElementById('entryBy').value,
+                approvedBy: document.getElementById('approvedBy').value,
+                subtotal: subtotal,
+                totalDiscount: totalDiscount,
+                totalAmount: totalAmount,
+                tax: tax,
+                grandTotal: grandTotal
+            });
         }
         
-        // Function to format date
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        function generatePrintContent(po) {
+            return generatePrintHTML(po);
         }
         
-        // Function to show print modal
-        function showPrintModal() {
-            // Create print content
-            const printContainer = document.getElementById('printContainer');
-            printContainer.innerHTML = `
+        function generatePrintHTML(data) {
+            return `
                 <div class="print-header">
-                    <div class="company-info" id="printCompanyInfo"></div>
+                    <div class="company-info">
+                        <strong>${data.companyName}</strong><br>
+                        ${data.companyAddress.replace(/\n/g, '<br>')}
+                    </div>
                 </div>
                 
-                <div class="po-info">
+                <div style="display: flex; justify-content: space-between; margin: 20px 0; font-size: 14px;">
                     <div>
-                        <strong>Nomor :</strong> <span id="printPoNumber"></span><br>
-                        <strong>Tanggal :</strong> <span id="printPoDate"></span>
+                        <strong>Numer :</strong> ${data.poNumber}<br>
+                        <strong>Tanggal :</strong> ${formatDate(data.date)}
                     </div>
                     <div>
-                        <strong>Supplier :</strong> <span id="printSupplierName"></span><br>
-                        <strong>Alamat :</strong> <span id="printSupplierAddress"></span>
+                        <strong>Supplier :</strong> ${data.supplierName}<br>
+                        <strong>Alamat :</strong> ${data.supplierAddress}
                     </div>
                 </div>
                 
@@ -1003,86 +1731,198 @@
                     PURCHASE ORDER
                 </div>
                 
-                <table class="print-table" id="printItemsTable">
+                <table style="width: 100%; border-collapse: collapse; margin: 25px 0; font-size: 13px;">
                     <thead>
                         <tr>
-                            <th>NO</th>
-                            <th>NAMA BARANG</th>
-                            <th>QTY</th>
-                            <th>HARGA SAT</th>
-                            <th>DISC %</th>
-                            <th>DISC TOTAL</th>
-                            <th>JUMLAH</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">NO</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">NAMA BARANG</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">QTY</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">HARGA SAT</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">DISC %</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">DISC TOTAL</th>
+                            <th style="border: 1px solid #333; padding: 8px; text-align: left;">JUMLAH</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Items will be inserted here -->
+                        ${data.items.map((item, index) => `
+                            <tr>
+                                <td style="border: 1px solid #333; padding: 8px;">${index + 1}</td>
+                                <td style="border: 1px solid #333; padding: 8px;"><strong>${item.code}</strong><br>${item.name}</td>
+                                <td style="border: 1px solid #333; padding: 8px;">${item.qty} ${item.unit}</td>
+                                <td style="border: 1px solid #333; padding: 8px;">${formatCurrency(item.price)}</td>
+                                <td style="border: 1px solid #333; padding: 8px;">${item.discountPercent}</td>
+                                <td style="border: 1px solid #333; padding: 8px;">${formatCurrency(item.discountAmount)}</td>
+                                <td style="border: 1px solid #333; padding: 8px;"><strong>${formatCurrency(item.total)}</strong></td>
+                            </tr>
+                        `).join('')}
                     </tbody>
                 </table>
                 
-                <div id="printNotes" style="margin-top: 10px; font-size: 14px; font-style: italic;"></div>
-                
-                <div class="totals">
-                    <div style="text-align: left; margin-bottom: 10px; font-weight: bold;">
-                        Entry, Mengetahui, Menyetujui
-                    </div>
-                    <div>SUB TOTAL : <span id="printSubtotal" class="currency"></span></div>
-                    <div>DISC : <span id="printTotalDiscount" class="currency"></span></div>
-                    <div>JUMLAH : <span id="printTotalAmount" class="currency"></span></div>
-                    <div>PPN : <span id="printTax" class="currency"></span></div>
+                <div style="margin-top: 10px; font-size: 14px; font-style: italic;">
+                    Keterangan : ${data.notes}
                 </div>
                 
-                <div class="signatures">
-                    <div class="signature-box" id="printEntryBy">
-                        <div style="margin-top: 10px;">Entry</div>
+                <div class="totals-block">
+                    <div class="total-row">
+                        <div class="total-label">SUB TOTAL :</div>
+                        <div class="total-value currency">${formatCurrency(data.subtotal)}</div>
                     </div>
-                    <div class="signature-box" id="printApprovedBy">
-                        <div style="margin-top: 10px;">Menyetujui</div>
+                    <div class="total-row">
+                        <div class="total-label">DISC :</div>
+                        <div class="total-value currency">${formatCurrency(data.totalDiscount)}</div>
                     </div>
-                    <div class="signature-box">
-                        <div id="printTimestamp" style="margin-top: 10px;"></div>
-                        <div style="margin-top: 10px;">Tanggal & Waktu</div>
+                    <div class="total-row">
+                        <div class="total-label">JUMLAH :</div>
+                        <div class="total-value currency">${formatCurrency(data.totalAmount)}</div>
+                    </div>
+                    <div class="total-row">
+                        <div class="total-label">PPN :</div>
+                        <div class="total-value currency">${formatCurrency(data.tax)}</div>
+                    </div>
+                    <div class="grand-total-row">
+                        <div class="grand-total-label">TOTAL :</div>
+                        <div class="grand-total-value currency">${formatCurrency(data.grandTotal)}</div>
                     </div>
                 </div>
                 
-                <div style="text-align: right; margin-top: 30px; font-weight: bold; font-size: 16px; border-top: 2px solid #333; padding-top: 10px;">
-                    TOTAL : <span id="printGrandTotal" class="currency"></span>
+                <div style="margin-top: 30px; font-size: 14px; text-align: left;">
+                    <strong>Entry, Mengetahui, Menyetujui</strong>
                 </div>
                 
-                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
-                    Halaman 1 dari 1 • Dokumen ini dicetak secara elektronis
+                <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                    <div style="text-align: center; width: 200px; padding-top: 60px; border-top: 2px solid #333;">
+                        <div style="margin-top: 10px; font-weight: bold;">( ${data.entryBy} )</div>
+                        <div style="margin-top: 5px;">Entry</div>
+                    </div>
+                    <div style="text-align: center; width: 200px; padding-top: 60px; border-top: 2px solid #333;">
+                        <div style="margin-top: 10px; font-weight: bold;">( ${data.approvedBy} )</div>
+                        <div style="margin-top: 5px;">Menyetujui</div>
+                    </div>
+                    <div style="text-align: center; width: 200px; padding-top: 60px; border-top: 2px solid #333;">
+                        <div style="margin-top: 10px; font-weight: bold;">${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'})}</div>
+                        <div style="margin-top: 5px;">Tanggal & Waktu</div>
+                    </div>
                 </div>
             `;
-            
-            // Update preview
-            updatePrintPreview();
-            
-            // Show modal
-            document.getElementById('printModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
         }
         
-        // Function to close print modal
-        function closePrintModal() {
-            document.getElementById('printModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Function to print document
         function printDocument() {
-            updatePrintPreview();
-            setTimeout(() => {
-                window.print();
-            }, 100);
+            window.print();
         }
         
-        // Function to save as PDF (simulated)
-        function saveAsPDF() {
-            showNotification('Fitur ekspor PDF akan segera tersedia!', 'error');
-            // In production, you would use libraries like jsPDF or html2pdf
+        // ==============================
+        // EXPORT FUNCTIONS
+        // ==============================
+        function exportData() {
+            const format = document.getElementById('exportFormat').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+            const status = document.getElementById('exportStatus').value;
+            
+            let exportData = [...poData];
+            
+            // Filter by date
+            if (dateFrom) {
+                exportData = exportData.filter(po => new Date(po.date) >= new Date(dateFrom));
+            }
+            if (dateTo) {
+                exportData = exportData.filter(po => new Date(po.date) <= new Date(dateTo));
+            }
+            
+            // Filter by status
+            if (status !== 'all') {
+                exportData = exportData.filter(po => po.status === status);
+            }
+            
+            if (exportData.length === 0) {
+                showNotification('Tidak ada data untuk diexport!', 'warning');
+                return;
+            }
+            
+            let content, filename, mimeType;
+            
+            switch(format) {
+                case 'csv':
+                    content = convertToCSV(exportData);
+                    filename = `po_export_${new Date().toISOString().split('T')[0]}.csv`;
+                    mimeType = 'text/csv';
+                    break;
+                case 'json':
+                    content = JSON.stringify(exportData, null, 2);
+                    filename = `po_export_${new Date().toISOString().split('T')[0]}.json`;
+                    mimeType = 'application/json';
+                    break;
+                case 'pdf':
+                    showNotification('Export PDF akan segera tersedia!', 'warning');
+                    return;
+            }
+            
+            downloadFile(content, filename, mimeType);
+            showNotification(`Data berhasil diexport (${exportData.length} records)!`, 'success');
         }
         
-        // Function to show notification
+        function convertToCSV(data) {
+            const headers = ['No PO', 'Tanggal', 'Supplier', 'Status', 'Jumlah Item', 'Total', 'Entry By', 'Approved By'];
+            const rows = data.map(po => [
+                po.poNumber,
+                formatDate(po.date),
+                po.supplierName,
+                getStatusText(po.status),
+                po.items.length,
+                formatCurrency(po.grandTotal),
+                po.entryBy,
+                po.approvedBy
+            ]);
+            
+            return [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ].join('\n');
+        }
+        
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function clearLocalStorage() {
+            if (confirm('Hapus semua data? Tindakan ini tidak dapat dibatalkan!')) {
+                localStorage.removeItem(STORAGE_KEY);
+                poData = [];
+                poCounter = 1;
+                saveData();
+                updateDashboard();
+                loadPOList();
+                showNotification('Semua data berhasil dihapus!', 'success');
+            }
+        }
+        
+        // ==============================
+        // UTILITY FUNCTIONS
+        // ==============================
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'draft': 'Draft',
+                'pending': 'Pending',
+                'approved': 'Disetujui',
+                'rejected': 'Ditolak'
+            };
+            return statusMap[status] || status;
+        }
+        
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -1094,69 +1934,108 @@
             }, 3000);
         }
         
-        // Function to reset form
-        function resetForm() {
-            if (confirm('Apakah Anda yakin ingin mereset form? Semua data akan dihapus.')) {
-                document.getElementById('itemsBody').innerHTML = '';
-                itemCount = 0;
+        // ==============================
+        // EVENT LISTENERS
+        // ==============================
+        document.addEventListener('DOMContentLoaded', function() {
+            initData();
+            setupNavigation();
+            
+            // Form event listeners
+            document.getElementById('addItemBtn').addEventListener('click', () => addItemRow());
+            document.getElementById('clearItemsBtn').addEventListener('click', clearAllItems);
+            document.getElementById('previewBtn').addEventListener('click', () => showPrintModal());
+            document.getElementById('resetBtn').addEventListener('click', resetForm);
+            document.getElementById('saveBtn').addEventListener('click', savePO);
+            
+            // Search and filter events
+            document.getElementById('searchPO').addEventListener('input', loadPOList);
+            document.getElementById('statusFilter').addEventListener('change', loadPOList);
+            
+            // Close modal when clicking outside
+            document.getElementById('printModal').addEventListener('click', function(e) {
+                if (e.target === this) closePrintModal();
+            });
+            
+            // Close modal with ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closePrintModal();
+            });
+            
+            // Add sample data if empty
+            if (poData.length === 0) {
+                // Add some sample POs for demo
+                const samplePOs = [
+                    {
+                        id: '1',
+                        poNumber: 'GM11.251027.001',
+                        date: '2025-10-27',
+                        status: 'approved',
+                        companyName: 'PT. GRAND MITRA BANGUNAM',
+                        companyAddress: 'THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272',
+                        supplierName: 'KARYA WIGUNA INDAH, PT.',
+                        supplierAddress: 'JAKARTA UTARA',
+                        supplierPhone: '021-12345678',
+                        items: [{
+                            code: '1023353',
+                            name: 'FULTON MONTE SERA GREY 60X60 @1,44 M2 MATT (SHADE 48)',
+                            qty: 3,
+                            unit: 'DUS',
+                            price: 129600,
+                            discountPercent: 0,
+                            discountAmount: 0,
+                            total: 388800
+                        }],
+                        notes: 'PO URGENT - Segera diproses',
+                        entryBy: 'ADAM',
+                        approvedBy: 'SOFYAN',
+                        subtotal: 388800,
+                        totalDiscount: 0,
+                        totalAmount: 388800,
+                        tax: 42768,
+                        grandTotal: 431568,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    },
+                    {
+                        id: '2',
+                        poNumber: 'GM11.251027.002',
+                        date: '2025-10-28',
+                        status: 'pending',
+                        companyName: 'PT. GRAND MITRA BANGUNAM',
+                        companyAddress: 'THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272',
+                        supplierName: 'SUPPLIER INDAH JAYA, PT.',
+                        supplierAddress: 'JAKARTA SELATAN',
+                        supplierPhone: '021-87654321',
+                        items: [{
+                            code: '1023354',
+                            name: 'KERAMIK PUTIH 40X40 CM PREMIUM QUALITY',
+                            qty: 10,
+                            unit: 'DUS',
+                            price: 85000,
+                            discountPercent: 5,
+                            discountAmount: 42500,
+                            total: 807500
+                        }],
+                        notes: 'Untuk proyek apartemen',
+                        entryBy: 'ADAM',
+                        approvedBy: '',
+                        subtotal: 850000,
+                        totalDiscount: 42500,
+                        totalAmount: 807500,
+                        tax: 88825,
+                        grandTotal: 896325,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    }
+                ];
                 
-                // Reset form fields
-                document.getElementById('companyName').value = 'PT. GRAND MITRA BANGUNAM';
-                document.getElementById('companyAddress').value = 'THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272';
-                generatePONumber(); // Auto generate new PO number
-                document.getElementById('supplierName').value = 'KARYA WIGUNA INDAH, PT. (S0154)';
-                document.getElementById('supplierAddress').value = 'JAKARTA UTARA';
-                document.getElementById('notes').value = 'PO URGENT - Segera diproses';
-                document.getElementById('entryBy').value = 'ADAM';
-                document.getElementById('approvedBy').value = 'SOFYAN';
-                
-                // Add one sample item row
-                addItemRow(sampleItem);
-                
-                showNotification('Form berhasil direset');
-            }
-        }
-        
-        // Function to save draft
-        function saveDraft() {
-            // In production, you would save to localStorage or server
-            showNotification('Draft berhasil disimpan!');
-        }
-        
-        // Event listeners
-        document.getElementById('addItemBtn').addEventListener('click', function() {
-            addItemRow();
-            showNotification('Barang berhasil ditambahkan');
-        });
-        
-        document.getElementById('clearItemsBtn').addEventListener('click', clearAllItems);
-        
-        document.getElementById('previewBtn').addEventListener('click', showPrintModal);
-        
-        document.getElementById('resetBtn').addEventListener('click', resetForm);
-        
-        document.getElementById('saveBtn').addEventListener('click', saveDraft);
-        
-        document.getElementById('printBtn').addEventListener('click', showPrintModal);
-        
-        // Close modal when clicking outside
-        document.getElementById('printModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePrintModal();
+                poData.push(...samplePOs);
+                saveData();
+                updateDashboard();
+                loadPOList();
             }
         });
-        
-        // Close modal with ESC key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closePrintModal();
-            }
-        });
-        
-        // Add sample item on load
-        window.onload = function() {
-            generatePONumber();
-        };
     </script>
 </body>
 </html>
