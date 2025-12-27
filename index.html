@@ -3,74 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Pembuatan Purchase Order v2</title>
+    <title>Aplikasi Pembuatan Purchase Order</title>
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            margin: 20px;
-            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
         }
         
         h1 {
             text-align: center;
             color: #2c3e50;
             margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            position: relative;
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
         }
         
         .form-section {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e1e1e1;
+            border-radius: 15px;
+            background-color: #f8f9fa;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
         
         .form-section h3 {
             margin-top: 0;
             color: #2c3e50;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-section h3::before {
+            content: '📋';
+            font-size: 1.2rem;
         }
         
         .form-row {
             display: flex;
             flex-wrap: wrap;
             margin-bottom: 15px;
+            gap: 20px;
         }
         
         .form-group {
             flex: 1;
             min-width: 250px;
-            margin-right: 20px;
-            margin-bottom: 10px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95rem;
         }
         
         .form-group input, .form-group textarea, .form-group select {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
             font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .form-group textarea {
@@ -78,135 +131,374 @@
             resize: vertical;
         }
         
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
+        .items-section {
+            overflow-x: auto;
             margin: 20px 0;
         }
         
-        .items-table th, .items-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
+        .items-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            min-width: 1000px; /* Minimum width for better mobile scrolling */
         }
         
         .items-table th {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            padding: 15px 12px;
+            text-align: left;
+            border: none;
+            position: sticky;
+            top: 0;
         }
         
-        .items-table tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .items-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e1e1e1;
+            background: white;
+            vertical-align: top;
         }
+        
+        .items-table tr:nth-child(even) td {
+            background-color: #f8f9fa;
+        }
+        
+        .items-table tr:hover td {
+            background-color: #f0f4ff;
+        }
+        
+        /* Proporsional kolom sesuai permintaan */
+        .items-table th:nth-child(1) { width: 4%; }    /* NO */
+        .items-table th:nth-child(2) { width: 45%; }   /* NAMA BARANG - DILEBAR */
+        .items-table th:nth-child(3) { width: 8%; }    /* QTY */
+        .items-table th:nth-child(4) { width: 12%; }   /* HARGA SAT - DIKECILKAN */
+        .items-table th:nth-child(5) { width: 7%; }    /* DISC % */
+        .items-table th:nth-child(6) { width: 12%; }   /* DISC TOTAL - DIKECILKAN */
+        .items-table th:nth-child(7) { width: 12%; }   /* JUMLAH */
         
         .btn {
-            padding: 10px 15px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 4px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 14px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn i {
+            font-size: 16px;
         }
         
         .btn-primary {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
         
         .btn-primary:hover {
-            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
         }
         
         .btn-secondary {
-            background-color: #7f8c8d;
+            background: #6c757d;
             color: white;
-            margin-left: 10px;
         }
         
         .btn-secondary:hover {
-            background-color: #6c7b7d;
+            background: #5a6268;
+            transform: translateY(-2px);
         }
         
         .btn-danger {
-            background-color: #e74c3c;
+            background: #e74c3c;
             color: white;
-            margin-left: 5px;
+            padding: 6px 12px;
+            font-size: 12px;
         }
         
         .btn-danger:hover {
-            background-color: #c0392b;
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #219653;
+            transform: translateY(-2px);
         }
         
         .actions {
             display: flex;
             justify-content: flex-end;
-            margin-top: 20px;
+            margin-top: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .print-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .print-modal-content {
+            background: white;
+            margin: 20px auto;
+            max-width: 800px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
         }
         
         .print-container {
-            display: none;
-            margin-top: 40px;
-            border: 1px solid #333;
-            padding: 20px;
-            background-color: white;
+            padding: 30px;
             font-family: 'Times New Roman', serif;
-            page-break-inside: avoid;
         }
         
         .print-header {
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            border-bottom: 3px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
         
         .company-info {
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.6;
         }
         
         .po-info {
             display: flex;
             justify-content: space-between;
-            margin: 15px 0;
+            margin: 20px 0;
             font-size: 14px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .po-info > div {
+            flex: 1;
+            min-width: 300px;
         }
         
         .print-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 12px;
+            margin: 25px 0;
+            font-size: 13px;
         }
         
         .print-table th, .print-table td {
             border: 1px solid #333;
-            padding: 6px;
+            padding: 8px;
             text-align: left;
         }
         
         .print-table th {
-            background-color: #eee;
+            background-color: #f0f0f0;
+            font-weight: bold;
         }
         
+        /* Proporsional kolom untuk print */
+        .print-table th:nth-child(1) { width: 4%; }
+        .print-table th:nth-child(2) { width: 50%; } /* Lebih lebar untuk print */
+        .print-table th:nth-child(3) { width: 8%; }
+        .print-table th:nth-child(4) { width: 10%; }
+        .print-table th:nth-child(5) { width: 6%; }
+        .print-table th:nth-child(6) { width: 10%; }
+        .print-table th:nth-child(7) { width: 12%; }
+        
         .totals {
-            margin-top: 20px;
+            margin-top: 25px;
             text-align: right;
             font-size: 14px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
         }
         
         .signatures {
             margin-top: 40px;
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
         }
         
         .signature-box {
             text-align: center;
-            width: 200px;
-            padding-top: 40px;
-            border-top: 1px solid #333;
+            flex: 1;
+            min-width: 200px;
+            padding-top: 60px;
+            border-top: 2px solid #333;
+            position: relative;
+        }
+        
+        .signature-box::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 1px;
+            background: #333;
+        }
+        
+        .modal-actions {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e1e1e1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        
+        .currency::before {
+            content: "Rp ";
+        }
+        
+        .currency-input {
+            text-align: right;
+            font-family: monospace;
+        }
+        
+        .auto-generate-btn {
+            margin-top: 5px;
+            padding: 6px 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .auto-generate-btn:hover {
+            background: #219653;
+            transform: translateY(-1px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                background: #f5f5f5;
+            }
+            
+            .container {
+                padding: 15px;
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-section {
+                padding: 15px;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+            
+            .items-table {
+                font-size: 13px;
+            }
+            
+            .items-table th,
+            .items-table td {
+                padding: 8px 6px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 13px;
+                width: 100%;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.2rem;
+            }
+            
+            .print-container {
+                padding: 15px;
+            }
+            
+            .po-info > div {
+                min-width: 100%;
+            }
+            
+            .signatures {
+                flex-direction: column;
+            }
         }
         
         @media print {
@@ -223,51 +515,49 @@
                 left: 0;
                 top: 0;
                 width: 100%;
-                border: none;
-                padding: 20px;
+                padding: 0;
                 margin: 0;
-                background-color: white;
-                box-shadow: none;
+                background: white;
             }
             
             .no-print {
                 display: none !important;
             }
-            
-            .print-container {
-                display: block !important;
-            }
         }
         
-        .input-small {
-            width: 80px;
-        }
-        
-        .input-medium {
-            width: 120px;
-        }
-        
-        .item-row-controls {
+        .form-controls {
             display: flex;
-            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
         }
         
-        .currency::before {
-            content: "Rp ";
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #27ae60;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            z-index: 1001;
         }
         
-        .currency-input {
-            text-align: right;
+        .notification.show {
+            transform: translateX(0);
         }
         
-        .print-visible {
-            display: block !important;
+        .notification.error {
+            background: #e74c3c;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container no-print">
-        <h1>Aplikasi Pembuatan Purchase Order</h1>
+        <h1><i class="fas fa-file-invoice-dollar"></i> Aplikasi Pembuatan Purchase Order</h1>
         
         <div class="form-section">
             <h3>Informasi Perusahaan & PO</h3>
@@ -284,8 +574,13 @@
             
             <div class="form-row">
                 <div class="form-group">
-                    <label for="poNumber">Nomor PO</label>
-                    <input type="text" id="poNumber" value="GM11.251027.010">
+                    <label for="poNumber">Nomor PO <span style="color: #667eea; font-size: 0.9em;">(Format: GM11.YYMMDD.XXX)</span></label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="poNumber" value="GM11.251027.001" style="flex: 1;">
+                        <button type="button" class="auto-generate-btn" onclick="generatePONumber()">
+                            <i class="fas fa-sync-alt"></i> Auto Generate
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="poDate">Tanggal PO</label>
@@ -310,25 +605,34 @@
         
         <div class="form-section">
             <h3>Daftar Barang</h3>
-            <table class="items-table">
-                <thead>
-                    <tr>
-                        <th width="5%">NO</th>
-                        <th width="35%">NAMA BARANG</th>
-                        <th width="10%">QTY</th>
-                        <th width="15%">HARGA SAT</th>
-                        <th width="10%">DISC %</th>
-                        <th width="15%">DISC TOTAL</th>
-                        <th width="10%">JUMLAH</th>
-                        <th width="5%">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsBody">
-                    <!-- Item rows will be added here -->
-                </tbody>
-            </table>
+            <div class="items-section">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>NO</th>
+                            <th>NAMA BARANG</th>
+                            <th>QTY</th>
+                            <th>HARGA SAT</th>
+                            <th>DISC %</th>
+                            <th>DISC TOTAL</th>
+                            <th>JUMLAH</th>
+                            <th style="width: 5%;">AKSI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsBody">
+                        <!-- Item rows will be added here -->
+                    </tbody>
+                </table>
+            </div>
             
-            <button type="button" class="btn btn-primary" id="addItemBtn">Tambah Barang</button>
+            <div class="form-controls">
+                <button type="button" class="btn btn-success" id="addItemBtn">
+                    <i class="fas fa-plus-circle"></i> Tambah Barang
+                </button>
+                <button type="button" class="btn btn-secondary" id="clearItemsBtn">
+                    <i class="fas fa-trash-alt"></i> Hapus Semua
+                </button>
+            </div>
         </div>
         
         <div class="form-section">
@@ -336,102 +640,71 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="notes">Keterangan</label>
-                    <textarea id="notes">PO URGENT</textarea>
+                    <textarea id="notes">PO URGENT - Segera diproses</textarea>
                 </div>
-                <div class="form-group">
-                    <label for="entryBy">Entry Oleh</label>
-                    <input type="text" id="entryBy" value="ADAM">
-                </div>
-                <div class="form-group">
-                    <label for="approvedBy">Menyetujui</label>
-                    <input type="text" id="approvedBy" value="SOFYAN">
+                <div class="form-row" style="flex: 1; gap: 20px;">
+                    <div class="form-group">
+                        <label for="entryBy">Entry Oleh</label>
+                        <input type="text" id="entryBy" value="ADAM">
+                    </div>
+                    <div class="form-group">
+                        <label for="approvedBy">Menyetujui</label>
+                        <input type="text" id="approvedBy" value="SOFYAN">
+                    </div>
                 </div>
             </div>
         </div>
         
         <div class="actions">
-            <button type="button" class="btn btn-primary" id="previewBtn">Preview PO</button>
-            <button type="button" class="btn btn-secondary" id="resetBtn">Reset Form</button>
-            <button type="button" class="btn btn-primary" id="printBtn">Cetak PO</button>
+            <button type="button" class="btn btn-primary" id="previewBtn">
+                <i class="fas fa-eye"></i> Preview PO
+            </button>
+            <button type="button" class="btn btn-secondary" id="resetBtn">
+                <i class="fas fa-redo"></i> Reset Form
+            </button>
+            <button type="button" class="btn btn-success" id="saveBtn">
+                <i class="fas fa-save"></i> Simpan Draft
+            </button>
+            <button type="button" class="btn btn-primary" id="printBtn">
+                <i class="fas fa-print"></i> Cetak PO
+            </button>
         </div>
     </div>
     
-    <!-- Print Output Section -->
-    <div class="print-container" id="printContainer">
-        <div class="print-header">
-            <div class="company-info" id="printCompanyInfo">
-                <!-- Company info will be inserted here -->
+    <!-- Print Modal -->
+    <div class="print-modal" id="printModal">
+        <div class="print-modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-print"></i> Preview Purchase Order</h2>
+                <button class="close-btn" onclick="closePrintModal()">&times;</button>
             </div>
-        </div>
-        
-        <div class="po-info">
-            <div>
-                <strong>Numer :</strong> <span id="printPoNumber"></span><br>
-                <strong>Tanggal :</strong> <span id="printPoDate"></span>
+            
+            <div class="print-container" id="printContainer">
+                <!-- Content will be inserted here -->
             </div>
-            <div>
-                <strong>Supplier :</strong> <span id="printSupplierName"></span><br>
-                <strong>Alamat :</strong> <span id="printSupplierAddress"></span>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closePrintModal()">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+                <button type="button" class="btn btn-primary" onclick="printDocument()">
+                    <i class="fas fa-print"></i> Cetak Dokumen
+                </button>
+                <button type="button" class="btn btn-success" onclick="saveAsPDF()">
+                    <i class="fas fa-file-pdf"></i> Simpan PDF
+                </button>
             </div>
-        </div>
-        
-        <div style="text-align: center; font-weight: bold; margin: 20px 0; font-size: 18px;">
-            PURCHASE ORDER
-        </div>
-        
-        <table class="print-table" id="printItemsTable">
-            <thead>
-                <tr>
-                    <th width="5%">NO</th>
-                    <th width="45%">NAMA BARANG</th>
-                    <th width="10%">QTY</th>
-                    <th width="15%">HARGA SAT</th>
-                    <th width="10%">DISC %</th>
-                    <th width="15%">DISC TOTAL</th>
-                    <th width="10%">JUMLAH</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Items will be inserted here -->
-            </tbody>
-        </table>
-        
-        <div id="printNotes" style="margin-top: 10px; font-size: 14px;">
-            <!-- Notes will be inserted here -->
-        </div>
-        
-        <div class="totals">
-            <div style="text-align: left; margin-bottom: 10px;">
-                Entry, Mengetahui, Menyetujui
-            </div>
-            <div>SUB TOTAL : <span id="printSubtotal" class="currency"></span></div>
-            <div>DISC : <span id="printTotalDiscount" class="currency"></span></div>
-            <div>JUMLAH : <span id="printTotalAmount" class="currency"></span></div>
-            <div>PPN : <span id="printTax" class="currency"></span></div>
-        </div>
-        
-        <div class="signatures">
-            <div class="signature-box" id="printEntryBy">
-                <!-- Entry signature -->
-            </div>
-            <div class="signature-box" id="printApprovedBy">
-                <!-- Approved signature -->
-            </div>
-            <div class="signature-box">
-                <div id="printTimestamp"></div>
-            </div>
-        </div>
-        
-        <div style="text-align: right; margin-top: 20px; font-weight: bold; font-size: 16px;">
-            TOTAL : <span id="printGrandTotal" class="currency"></span>
-        </div>
-        
-        <div style="text-align: center; margin-top: 20px; font-size: 12px;">
-            Halaman 1 dari 1
         </div>
     </div>
+    
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
 
     <script>
+        // Auto increment counter for PO number
+        let poCounter = 1;
+        let itemCount = 0;
+        
         // Sample data for the item
         const sampleItem = {
             code: "1023353",
@@ -443,18 +716,34 @@
             discountAmount: "0.00"
         };
         
-        let itemCount = 0;
-        
         // Initialize with one item
         document.addEventListener('DOMContentLoaded', function() {
+            generatePONumber();
             addItemRow(sampleItem);
-            updatePrintPreview();
         });
+        
+        // Function to generate PO number
+        function generatePONumber() {
+            const now = new Date();
+            const year = now.getFullYear().toString().slice(-2);
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            
+            // Increment counter for new PO
+            poCounter++;
+            const counter = poCounter.toString().padStart(3, '0');
+            
+            document.getElementById('poNumber').value = `GM11.${year}${month}${day}.${counter}`;
+            
+            // Update date field
+            document.getElementById('poDate').value = now.toISOString().split('T')[0];
+            
+            showNotification('Nomor PO berhasil digenerate!');
+        }
         
         // Function to parse currency string to number
         function parseCurrency(value) {
             if (!value || value === '') return 0;
-            // Remove "Rp ", dots (thousands separators), and replace comma with dot
             let cleanValue = value.toString()
                 .replace(/Rp\s*/g, '')
                 .replace(/\./g, '')
@@ -464,7 +753,6 @@
         
         // Function to format number to currency string
         function formatCurrency(value) {
-            // Format with dots as thousands separator and comma as decimal separator
             let parts = value.toFixed(2).split('.');
             let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
             return integerPart + ',' + parts[1];
@@ -477,7 +765,6 @@
             const row = document.createElement('tr');
             row.id = `itemRow${itemCount}`;
             
-            // Format price for display
             let displayPrice = '';
             if (item && item.price) {
                 displayPrice = formatCurrency(parseFloat(item.price));
@@ -486,36 +773,51 @@
             row.innerHTML = `
                 <td>${itemCount}</td>
                 <td>
-                    <input type="text" class="item-code" placeholder="Kode barang" value="${item ? item.code : ''}" style="width: 80px; margin-bottom: 5px;">
+                    <input type="text" class="item-code" placeholder="Kode barang" value="${item ? item.code : ''}" style="width: 80px; margin-bottom: 5px; font-size: 12px;">
                     <br>
-                    <input type="text" class="item-name" placeholder="Nama barang" value="${item ? item.name : ''}" style="width: 100%;">
+                    <textarea class="item-name" placeholder="Nama barang" rows="2" style="width: 100%; font-size: 13px; padding: 8px;">${item ? item.name : ''}</textarea>
                 </td>
                 <td>
-                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : '1'}" style="width: 50px;">
-                    <input type="text" class="item-unit" placeholder="Unit" value="${item ? item.unit : 'DUS'}" style="width: 50px; margin-top: 5px;">
+                    <input type="text" class="item-qty" placeholder="Qty" value="${item ? item.qty : '1'}" style="width: 50px; font-size: 13px;">
+                    <select class="item-unit" style="width: 70px; margin-top: 5px; font-size: 12px;">
+                        <option value="DUS" ${item && item.unit === 'DUS' ? 'selected' : ''}>DUS</option>
+                        <option value="PCS" ${item && item.unit === 'PCS' ? 'selected' : ''}>PCS</option>
+                        <option value="UNIT" ${item && item.unit === 'UNIT' ? 'selected' : ''}>UNIT</option>
+                        <option value="SET" ${item && item.unit === 'SET' ? 'selected' : ''}>SET</option>
+                        <option value="LSN" ${item && item.unit === 'LSN' ? 'selected' : ''}>LSN</option>
+                    </select>
                 </td>
                 <td>
-                    <input type="text" class="item-price currency-input" placeholder="Harga" value="${displayPrice}" onblur="formatCurrencyInput(this)">
+                    <input type="text" class="item-price currency-input" placeholder="0,00" value="${displayPrice}" 
+                           onblur="formatCurrencyInput(this)" style="font-size: 13px;">
                 </td>
                 <td>
-                    <input type="text" class="item-discount-percent" placeholder="%" value="${item ? item.discountPercent : ''}" style="width: 50px;">
+                    <input type="text" class="item-discount-percent" placeholder="%" 
+                           value="${item ? item.discountPercent : ''}" style="width: 50px; font-size: 13px;">
                 </td>
                 <td>
-                    <input type="text" class="item-discount-amount currency-input" placeholder="Diskon" value="${item && item.discountAmount ? formatCurrency(parseFloat(item.discountAmount)) : '0,00'}" readonly>
+                    <input type="text" class="item-discount-amount currency-input" placeholder="0,00" 
+                           value="${item && item.discountAmount ? formatCurrency(parseFloat(item.discountAmount)) : '0,00'}" 
+                           readonly style="font-size: 13px;">
                 </td>
-                <td><span class="item-total currency">${item && item.price ? formatCurrency(parseFloat(item.price) * (parseFloat(item.qty) || 1)) : '0,00'}</span></td>
-                <td class="item-row-controls">
-                    <button type="button" class="btn btn-danger" onclick="removeItemRow(${itemCount})">X</button>
+                <td>
+                    <span class="item-total currency" style="font-weight: bold; font-size: 13px;">
+                        ${item && item.price ? formatCurrency(parseFloat(item.price) * (parseFloat(item.qty) || 1)) : '0,00'}
+                    </span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="removeItemRow(${itemCount})">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </td>
             `;
             
             tbody.appendChild(row);
             
-            // Add event listeners to the new row inputs
-            const inputs = row.querySelectorAll('input');
+            // Add event listeners
+            const inputs = row.querySelectorAll('input, textarea, select');
             inputs.forEach(input => {
                 input.addEventListener('input', calculateRowTotal);
-                input.addEventListener('input', updatePrintPreview);
             });
             
             calculateRowTotal({target: row.querySelector('.item-price')});
@@ -535,10 +837,20 @@
                 row.remove();
                 renumberItems();
                 updatePrintPreview();
+                showNotification('Barang berhasil dihapus');
             }
         }
         
-        // Function to renumber items after deletion
+        // Function to clear all items
+        function clearAllItems() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua barang?')) {
+                document.getElementById('itemsBody').innerHTML = '';
+                itemCount = 0;
+                showNotification('Semua barang berhasil dihapus');
+            }
+        }
+        
+        // Function to renumber items
         function renumberItems() {
             const rows = document.querySelectorAll('#itemsBody tr');
             itemCount = 0;
@@ -548,7 +860,6 @@
                 row.cells[0].textContent = itemCount;
                 row.id = `itemRow${itemCount}`;
                 
-                // Update remove button onclick
                 const removeBtn = row.querySelector('.btn-danger');
                 if (removeBtn) {
                     removeBtn.setAttribute('onclick', `removeItemRow(${itemCount})`);
@@ -569,10 +880,6 @@
             
             if (discountPercent > 0) {
                 discountAmount = (qty * price * discountPercent) / 100;
-            } else {
-                // If discount percent is not set, use the discount amount field
-                const discountInput = row.querySelector('.item-discount-amount').value;
-                discountAmount = parseCurrency(discountInput);
             }
             
             const total = (qty * price) - discountAmount;
@@ -582,22 +889,20 @@
             
             // Update total display
             row.querySelector('.item-total').textContent = formatCurrency(total);
-            
-            // Update print preview
-            updatePrintPreview();
         }
         
         // Function to update print preview
         function updatePrintPreview() {
-            console.log("Updating print preview...");
-            
             // Company info
             const companyName = document.getElementById('companyName').value;
             const companyAddress = document.getElementById('companyAddress').value;
-            document.getElementById('printCompanyInfo').innerHTML = `
-                <strong>${companyName}</strong><br>
-                ${companyAddress.replace(/\n/g, '<br>')}
-            `;
+            const printCompanyInfo = document.getElementById('printCompanyInfo');
+            if (printCompanyInfo) {
+                printCompanyInfo.innerHTML = `
+                    <strong>${companyName}</strong><br>
+                    ${companyAddress.replace(/\n/g, '<br>')}
+                `;
+            }
             
             // PO info
             document.getElementById('printPoNumber').textContent = document.getElementById('poNumber').value;
@@ -607,68 +912,64 @@
             
             // Items table
             const printTableBody = document.querySelector('#printItemsTable tbody');
-            printTableBody.innerHTML = '';
-            
-            const itemRows = document.querySelectorAll('#itemsBody tr');
-            let subtotal = 0;
-            let totalDiscount = 0;
-            
-            itemRows.forEach((row, index) => {
-                const code = row.querySelector('.item-code').value || '';
-                const name = row.querySelector('.item-name').value || '';
-                const qty = row.querySelector('.item-qty').value || '0';
-                const unit = row.querySelector('.item-unit').value || '';
-                const price = parseCurrency(row.querySelector('.item-price').value);
-                const discountPercent = row.querySelector('.item-discount-percent').value || '';
-                const discountAmount = parseCurrency(row.querySelector('.item-discount-amount').value);
-                const total = parseCurrency(row.querySelector('.item-total').textContent);
+            if (printTableBody) {
+                printTableBody.innerHTML = '';
                 
-                subtotal += qty * price;
-                totalDiscount += discountAmount;
+                const itemRows = document.querySelectorAll('#itemsBody tr');
+                let subtotal = 0;
+                let totalDiscount = 0;
                 
-                const printRow = document.createElement('tr');
-                printRow.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${code} ${name}</td>
-                    <td>${qty} ${unit}</td>
-                    <td>${formatCurrency(price)}</td>
-                    <td>${discountPercent}</td>
-                    <td>${formatCurrency(discountAmount)}</td>
-                    <td>${formatCurrency(total)}</td>
-                `;
+                itemRows.forEach((row, index) => {
+                    const code = row.querySelector('.item-code').value || '';
+                    const name = row.querySelector('.item-name').value || '';
+                    const qty = row.querySelector('.item-qty').value || '0';
+                    const unit = row.querySelector('.item-unit').value || '';
+                    const price = parseCurrency(row.querySelector('.item-price').value);
+                    const discountPercent = row.querySelector('.item-discount-percent').value || '';
+                    const discountAmount = parseCurrency(row.querySelector('.item-discount-amount').value);
+                    const total = parseCurrency(row.querySelector('.item-total').textContent);
+                    
+                    subtotal += qty * price;
+                    totalDiscount += discountAmount;
+                    
+                    const printRow = document.createElement('tr');
+                    printRow.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td><strong>${code}</strong><br>${name}</td>
+                        <td>${qty} ${unit}</td>
+                        <td>${formatCurrency(price)}</td>
+                        <td>${discountPercent}</td>
+                        <td>${formatCurrency(discountAmount)}</td>
+                        <td><strong>${formatCurrency(total)}</strong></td>
+                    `;
+                    
+                    printTableBody.appendChild(printRow);
+                });
                 
-                printTableBody.appendChild(printRow);
-            });
-            
-            // Calculate totals
-            const totalAmount = subtotal - totalDiscount;
-            const tax = totalAmount * 0.11; // Assuming 11% PPN
-            const grandTotal = totalAmount + tax;
-            
-            // Update totals in preview
-            document.getElementById('printSubtotal').textContent = formatCurrency(subtotal);
-            document.getElementById('printTotalDiscount').textContent = formatCurrency(totalDiscount);
-            document.getElementById('printTotalAmount').textContent = formatCurrency(totalAmount);
-            document.getElementById('printTax').textContent = formatCurrency(tax);
-            document.getElementById('printGrandTotal').textContent = formatCurrency(grandTotal);
-            
-            // Notes
-            document.getElementById('printNotes').textContent = `Keterangan : ${document.getElementById('notes').value}`;
-            
-            // Signatures
-            document.getElementById('printEntryBy').innerHTML = `
-                ( ${document.getElementById('entryBy').value} )
-            `;
-            document.getElementById('printApprovedBy').innerHTML = `
-                ( ${document.getElementById('approvedBy').value} )
-            `;
-            
-            // Timestamp
-            const now = new Date();
-            document.getElementById('printTimestamp').textContent = 
-                `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-            
-            console.log("Print preview updated successfully");
+                // Calculate totals
+                const totalAmount = subtotal - totalDiscount;
+                const tax = totalAmount * 0.11;
+                const grandTotal = totalAmount + tax;
+                
+                // Update totals
+                document.getElementById('printSubtotal').textContent = formatCurrency(subtotal);
+                document.getElementById('printTotalDiscount').textContent = formatCurrency(totalDiscount);
+                document.getElementById('printTotalAmount').textContent = formatCurrency(totalAmount);
+                document.getElementById('printTax').textContent = formatCurrency(tax);
+                document.getElementById('printGrandTotal').textContent = formatCurrency(grandTotal);
+                
+                // Notes
+                document.getElementById('printNotes').textContent = `Keterangan : ${document.getElementById('notes').value}`;
+                
+                // Signatures
+                document.getElementById('printEntryBy').innerHTML = `( ${document.getElementById('entryBy').value} )`;
+                document.getElementById('printApprovedBy').innerHTML = `( ${document.getElementById('approvedBy').value} )`;
+                
+                // Timestamp
+                const now = new Date();
+                document.getElementById('printTimestamp').textContent = 
+                    `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            }
         }
         
         // Function to format date
@@ -678,43 +979,119 @@
             return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth()+1).toString().padStart(2, '0')}/${date.getFullYear()}`;
         }
         
-        // Function to show print preview
-        function showPrintPreview() {
-            updatePrintPreview();
-            document.getElementById('printContainer').style.display = 'block';
-            document.getElementById('previewBtn').textContent = 'Sembunyikan Preview';
-            
-            // Scroll to preview
-            document.getElementById('printContainer').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        // Function to hide print preview
-        function hidePrintPreview() {
-            document.getElementById('printContainer').style.display = 'none';
-            document.getElementById('previewBtn').textContent = 'Preview PO';
-        }
-        
-        // Function to print PO
-        function printPO() {
-            console.log("Printing PO...");
-            
-            // Ensure print preview is updated
-            updatePrintPreview();
-            
-            // Show print container
-            document.getElementById('printContainer').style.display = 'block';
-            
-            // Wait a moment for DOM to update
-            setTimeout(() => {
-                // Trigger print
-                window.print();
+        // Function to show print modal
+        function showPrintModal() {
+            // Create print content
+            const printContainer = document.getElementById('printContainer');
+            printContainer.innerHTML = `
+                <div class="print-header">
+                    <div class="company-info" id="printCompanyInfo"></div>
+                </div>
                 
-                // Hide print container after printing
-                setTimeout(() => {
-                    document.getElementById('printContainer').style.display = 'none';
-                    document.getElementById('previewBtn').textContent = 'Preview PO';
-                }, 500);
+                <div class="po-info">
+                    <div>
+                        <strong>Nomor :</strong> <span id="printPoNumber"></span><br>
+                        <strong>Tanggal :</strong> <span id="printPoDate"></span>
+                    </div>
+                    <div>
+                        <strong>Supplier :</strong> <span id="printSupplierName"></span><br>
+                        <strong>Alamat :</strong> <span id="printSupplierAddress"></span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; font-weight: bold; margin: 20px 0; font-size: 18px; border-bottom: 2px solid #333; padding-bottom: 10px;">
+                    PURCHASE ORDER
+                </div>
+                
+                <table class="print-table" id="printItemsTable">
+                    <thead>
+                        <tr>
+                            <th>NO</th>
+                            <th>NAMA BARANG</th>
+                            <th>QTY</th>
+                            <th>HARGA SAT</th>
+                            <th>DISC %</th>
+                            <th>DISC TOTAL</th>
+                            <th>JUMLAH</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Items will be inserted here -->
+                    </tbody>
+                </table>
+                
+                <div id="printNotes" style="margin-top: 10px; font-size: 14px; font-style: italic;"></div>
+                
+                <div class="totals">
+                    <div style="text-align: left; margin-bottom: 10px; font-weight: bold;">
+                        Entry, Mengetahui, Menyetujui
+                    </div>
+                    <div>SUB TOTAL : <span id="printSubtotal" class="currency"></span></div>
+                    <div>DISC : <span id="printTotalDiscount" class="currency"></span></div>
+                    <div>JUMLAH : <span id="printTotalAmount" class="currency"></span></div>
+                    <div>PPN : <span id="printTax" class="currency"></span></div>
+                </div>
+                
+                <div class="signatures">
+                    <div class="signature-box" id="printEntryBy">
+                        <div style="margin-top: 10px;">Entry</div>
+                    </div>
+                    <div class="signature-box" id="printApprovedBy">
+                        <div style="margin-top: 10px;">Menyetujui</div>
+                    </div>
+                    <div class="signature-box">
+                        <div id="printTimestamp" style="margin-top: 10px;"></div>
+                        <div style="margin-top: 10px;">Tanggal & Waktu</div>
+                    </div>
+                </div>
+                
+                <div style="text-align: right; margin-top: 30px; font-weight: bold; font-size: 16px; border-top: 2px solid #333; padding-top: 10px;">
+                    TOTAL : <span id="printGrandTotal" class="currency"></span>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #666;">
+                    Halaman 1 dari 1 • Dokumen ini dicetak secara elektronis
+                </div>
+            `;
+            
+            // Update preview
+            updatePrintPreview();
+            
+            // Show modal
+            document.getElementById('printModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Function to close print modal
+        function closePrintModal() {
+            document.getElementById('printModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Function to print document
+        function printDocument() {
+            updatePrintPreview();
+            setTimeout(() => {
+                window.print();
             }, 100);
+        }
+        
+        // Function to save as PDF (simulated)
+        function saveAsPDF() {
+            showNotification('Fitur ekspor PDF akan segera tersedia!', 'error');
+            // In production, you would use libraries like jsPDF or html2pdf
+        }
+        
+        // Function to show notification
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
         
         // Function to reset form
@@ -726,50 +1103,60 @@
                 // Reset form fields
                 document.getElementById('companyName').value = 'PT. GRAND MITRA BANGUNAM';
                 document.getElementById('companyAddress').value = 'THAMRIN CENTRE AVENUE NO. 18, JALAN MH THAMRIN KEL. KOSAMBI BARUT, KEC. KOSAMBI TANGERANG - BANTEN, TELP 021-39727272';
-                document.getElementById('poNumber').value = 'GM11.251027.010';
-                document.getElementById('poDate').value = '2025-10-27';
+                generatePONumber(); // Auto generate new PO number
                 document.getElementById('supplierName').value = 'KARYA WIGUNA INDAH, PT. (S0154)';
                 document.getElementById('supplierAddress').value = 'JAKARTA UTARA';
-                document.getElementById('notes').value = 'PO URGENT';
+                document.getElementById('notes').value = 'PO URGENT - Segera diproses';
                 document.getElementById('entryBy').value = 'ADAM';
                 document.getElementById('approvedBy').value = 'SOFYAN';
                 
                 // Add one sample item row
                 addItemRow(sampleItem);
                 
-                // Update preview
-                updatePrintPreview();
-                
-                // Hide preview
-                hidePrintPreview();
+                showNotification('Form berhasil direset');
             }
+        }
+        
+        // Function to save draft
+        function saveDraft() {
+            // In production, you would save to localStorage or server
+            showNotification('Draft berhasil disimpan!');
         }
         
         // Event listeners
         document.getElementById('addItemBtn').addEventListener('click', function() {
             addItemRow();
+            showNotification('Barang berhasil ditambahkan');
         });
         
-        document.getElementById('previewBtn').addEventListener('click', function() {
-            if (document.getElementById('printContainer').style.display === 'block') {
-                hidePrintPreview();
-            } else {
-                showPrintPreview();
-            }
-        });
+        document.getElementById('clearItemsBtn').addEventListener('click', clearAllItems);
+        
+        document.getElementById('previewBtn').addEventListener('click', showPrintModal);
         
         document.getElementById('resetBtn').addEventListener('click', resetForm);
         
-        document.getElementById('printBtn').addEventListener('click', printPO);
+        document.getElementById('saveBtn').addEventListener('click', saveDraft);
         
-        // Add event listeners to all form inputs for live preview update
-        const formInputs = document.querySelectorAll('.form-section input, .form-section textarea, .form-section select');
-        formInputs.forEach(input => {
-            input.addEventListener('input', updatePrintPreview);
+        document.getElementById('printBtn').addEventListener('click', showPrintModal);
+        
+        // Close modal when clicking outside
+        document.getElementById('printModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePrintModal();
+            }
         });
         
-        // Initialize the form
-        updatePrintPreview();
+        // Close modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePrintModal();
+            }
+        });
+        
+        // Add sample item on load
+        window.onload = function() {
+            generatePONumber();
+        };
     </script>
 </body>
 </html>
